@@ -1,16 +1,5 @@
-# Next.js + Node
-node_modules/
-.next/
-.swc/
-out/
-build/
-
-# Env + logs
-.env*
-*.log
-npm-debug.log*
-yarn-error.log*
-
-# Optional but useful
-.DS_Store
-Thumbs.db
+node_modules/ 
+.next/ 
+.swc/ 
+out/ 
+.env* 
