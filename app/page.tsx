@@ -589,18 +589,23 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                whileHover={{ y: -10 }}
+                whileHover={{ y: -8 }}
                 className="group cursor-pointer"
               >
-                <div className="relative aspect-[4/3] rounded-2xl overflow-hidden mb-4">
+                <motion.div 
+                  className="relative aspect-[4/3] rounded-2xl overflow-hidden mb-4"
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+                >
                   <Image
                     src={award.image}
                     alt={award.title}
                     fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                    className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
-                </div>
-                <h4 className="font-bold mb-1">{award.title}</h4>
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500" />
+                </motion.div>
+                <h4 className="font-bold mb-1 group-hover:text-gray-300 transition-colors duration-300">{award.title}</h4>
                 <p className="text-gray-400 text-sm">{award.project}</p>
               </motion.div>
             ))}
@@ -636,8 +641,16 @@ export default function Home() {
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
                     transition={{ delay: idx * 0.05 }}
-                    whileHover={{ scale: 1.05 }}
-                    className="px-4 py-2 bg-zinc-900 rounded-full text-sm"
+                    whileHover={{ 
+                      scale: 1.08,
+                      y: -4,
+                      backgroundColor: "rgba(255, 255, 255, 0.15)",
+                    }}
+                    transition={{ 
+                      duration: 0.3,
+                      ease: [0.4, 0, 0.2, 1]
+                    }}
+                    className="px-4 py-2 bg-zinc-900 rounded-full text-sm cursor-pointer transition-shadow hover:shadow-lg hover:shadow-white/5"
                   >
                     {skill}
                   </motion.span>
@@ -659,8 +672,16 @@ export default function Home() {
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
                     transition={{ delay: idx * 0.05 }}
-                    whileHover={{ scale: 1.05 }}
-                    className="px-4 py-2 bg-zinc-900 rounded-full text-sm"
+                    whileHover={{ 
+                      scale: 1.08,
+                      y: -4,
+                      backgroundColor: "rgba(255, 255, 255, 0.15)",
+                    }}
+                    transition={{ 
+                      duration: 0.3,
+                      ease: [0.4, 0, 0.2, 1]
+                    }}
+                    className="px-4 py-2 bg-zinc-900 rounded-full text-sm cursor-pointer transition-shadow hover:shadow-lg hover:shadow-white/5"
                   >
                     {skill}
                   </motion.span>
