@@ -674,10 +674,7 @@ export default function Home() {
                       y: -4,
                       backgroundColor: "rgba(255, 255, 255, 0.15)",
                     }}
-                    transition={{ 
-                      duration: 0.3,
-                      ease: [0.4, 0, 0.2, 1]
-                    }}
+                    
                     className="px-4 py-2 bg-zinc-900 rounded-full text-sm cursor-pointer transition-shadow hover:shadow-lg hover:shadow-white/5"
                   >
                     {skill}
