@@ -382,7 +382,7 @@ export default function Home() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-6xl md:text-8xl lg:text-9xl font-bold text-center mb-8"
           >
-            YOUR NAME
+            Roman Khonyakov
           </motion.h1>
 
           <motion.p
