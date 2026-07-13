@@ -2,11 +2,9 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import Image from "next/image";
 import Link from "next/link";
-import { ChevronRight, ExternalLink, Award, Mail, Phone, MapPin } from "lucide-react";
+import { ChevronRight, ExternalLink, Mail, Phone, MapPin, Github, Linkedin, Code2, Database, Server, Palette } from "lucide-react";
 
-// Custom hook for intersection observer
 function useInView(options = {}) {
   const [isInView, setIsInView] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -15,22 +13,13 @@ function useInView(options = {}) {
     const observer = new IntersectionObserver(([entry]) => {
       setIsInView(entry.isIntersecting);
     }, options);
-
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
-    return () => {
-      if (ref.current) {
-        observer.unobserve(ref.current);
-      }
-    };
+    if (ref.current) observer.observe(ref.current);
+    return () => { if (ref.current) observer.unobserve(ref.current); };
   }, []);
 
   return [ref, isInView] as const;
 }
 
-// Rotating text component
 function RotatingText({ items }: { items: string[] }) {
   const [index, setIndex] = useState(0);
 
@@ -59,8 +48,7 @@ function RotatingText({ items }: { items: string[] }) {
   );
 }
 
-// Magnetic button component
-function MagneticButton({ children, href }: { children: React.ReactNode; href: string }) {
+function MagneticButton({ children, href, external }: { children: React.ReactNode; href: string; external?: boolean }) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const buttonRef = useRef<HTMLAnchorElement>(null);
 
@@ -72,16 +60,14 @@ function MagneticButton({ children, href }: { children: React.ReactNode; href: s
     setPosition({ x: x * 0.3, y: y * 0.3 });
   };
 
-  const handleMouseLeave = () => {
-    setPosition({ x: 0, y: 0 });
-  };
-
   return (
     <motion.a
       ref={buttonRef}
       href={href}
+      target={external ? "_blank" : undefined}
+      rel={external ? "noopener noreferrer" : undefined}
       onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      onMouseLeave={() => setPosition({ x: 0, y: 0 })}
       animate={position}
       transition={{ type: "spring", stiffness: 150, damping: 15 }}
       className="inline-flex items-center gap-2 px-8 py-4 bg-white text-black rounded-full font-medium hover:bg-gray-100 transition-colors"
@@ -91,358 +77,245 @@ function MagneticButton({ children, href }: { children: React.ReactNode; href: s
   );
 }
 
-// Project card with expandable gallery
-function ProjectCard({ project }: { project: any }) {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [currentImage, setCurrentImage] = useState(0);
-  const [ref, isInView] = useInView({ threshold: 0.2 });
-
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 60 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6 }}
-      className="group relative"
-    >
-      <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-zinc-900">
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          transition={{ duration: 0.6 }}
-          className="relative w-full h-full"
-        >
-          <Image
-            src={project.images[currentImage]}
-            alt={project.title}
-            fill
-            className="object-cover"
-          />
-        </motion.div>
-        
-        {/* Image navigation */}
-        {project.images.length > 1 && (
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-            {project.images.map((_: any, idx: number) => (
-              <button
-                key={idx}
-                onClick={() => setCurrentImage(idx)}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  idx === currentImage ? "bg-white w-8" : "bg-white/50"
-                }`}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div className="mt-6">
-        <h3 className="text-2xl font-bold mb-2">{project.title}</h3>
-        <p className="text-gray-400 mb-4">{project.description}</p>
-
-        <div className="flex gap-4 mb-4">
-          {project.liveUrl && (
-            <a
-              href={project.liveUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-white hover:text-gray-300 flex items-center gap-1"
-            >
-              Visit Live <ExternalLink size={14} />
-            </a>
-          )}
-          {project.behanceUrl && (
-            <a
-              href={project.behanceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-white hover:text-gray-300 flex items-center gap-1"
-            >
-              Learn More <ChevronRight size={14} />
-            </a>
-          )}
-        </div>
-
-        {/* Awards section */}
-        {project.awards && project.awards.length > 0 && (
-          <div>
-            <button
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="text-sm text-gray-400 hover:text-white flex items-center gap-2 mb-2"
-            >
-              <Award size={16} />
-              Awards {isExpanded ? "↑" : "↓"}
-            </button>
-
-            <AnimatePresence>
-              {isExpanded && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  className="overflow-hidden"
-                >
-                  {project.awards.map((award: any, idx: number) => (
-                    <div key={idx} className="mb-3 pl-6 border-l-2 border-zinc-800">
-                      <a
-                        href={award.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-medium text-white hover:text-gray-300"
-                      >
-                        {award.name}
-                      </a>
-                      <ul className="text-sm text-gray-500 mt-1">
-                        {award.awards.map((a: string, i: number) => (
-                          <li key={i}>• {a}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )}
-      </div>
-    </motion.div>
-  );
-}
-
-// Animated statistic
 function AnimatedStat({ end, label, suffix = "" }: { end: number; label: string; suffix?: string }) {
   const [count, setCount] = useState(0);
   const [ref, isInView] = useInView({ threshold: 0.5 });
 
   useEffect(() => {
     if (!isInView) return;
-
     let start = 0;
     const duration = 2000;
     const increment = end / (duration / 16);
-
     const timer = setInterval(() => {
       start += increment;
-      if (start >= end) {
-        setCount(end);
-        clearInterval(timer);
-      } else {
-        setCount(Math.floor(start));
-      }
+      if (start >= end) { setCount(end); clearInterval(timer); }
+      else { setCount(Math.floor(start)); }
     }, 16);
-
     return () => clearInterval(timer);
   }, [isInView, end]);
 
   return (
     <div ref={ref} className="text-center">
-      <div className="text-5xl font-bold mb-2">
-        {count}
-        {suffix}
-      </div>
+      <div className="text-5xl font-bold mb-2">{count}{suffix}</div>
       <div className="text-gray-400">{label}</div>
     </div>
   );
 }
 
-export default function Home() {
-  const { scrollYProgress } = useScroll();
-  const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 0.2], [1, 0.8]);
+const skillCategories = [
+  {
+    icon: <Server size={20} />,
+    label: "Back-end",
+    items: ["PHP 8.4", "Symfony 7", "Java", "Python", "SQL", "Doctrine ORM", "REST API"],
+  },
+  {
+    icon: <Code2 size={20} />,
+    label: "Front-end",
+    items: ["JavaScript", "TypeScript", "HTML / CSS", "Twig", "Stimulus", "Hotwire", "Angular"],
+  },
+  {
+    icon: <Database size={20} />,
+    label: "Outils & DevOps",
+    items: ["Git / GitHub", "Docker", "PHPUnit", "Leaflet / OSM", "FullCalendar", "RRule", "iCalendar"],
+  },
+  {
+    icon: <Palette size={20} />,
+    label: "Design & Architecture",
+    items: ["Figma", "UX / UI", "MVC", "Services Architecture", "Multi-roles", "Migrations"],
+  },
+];
 
-  // Sample data - replace with your actual data
-  const roles = [
-    "Creative Art Director",
-    "Creative Designer",
-    "Visual Designer",
-    "UI/UX Designer",
-  ];
+const projects = [
+  {
+    title: "Kvas & Cidre — Gestion associative",
+    description:
+      "Application web full-stack de gestion associative avec Symfony 7 et PHP 8.4. Système multi-rôles (Admin, Teacher, User, PaymentManager), agendas récurrents avec gestion des jours fériés et vacances scolaires (RRule), calendrier interactif (Stimulus/Hotwire), carte géolocalisée (Leaflet/OSM), gestion des paiements, export CSV et envoi d'emails automatisés. 22 entités Doctrine, architecture orientée services.",
+    tags: ["Symfony 7", "PHP 8.4", "Doctrine ORM", "RRule", "Leaflet", "PHPUnit", "Stimulus"],
+    gradient: "from-blue-900/30 to-purple-900/30",
+    icon: "🗓️",
+    githubUrl: "https://github.com/Razdsgn",
+  },
+  {
+    title: "Enchere — Système d'enchères",
+    description:
+      "Système d'enchères en ligne développé en full-stack. Interface utilisateur moderne avec logique métier Symfony, gestion des offres en temps réel, sécurité des accès et base de données optimisée. Architecture MVC robuste avec Doctrine et formulaires Symfony.",
+    tags: ["Symfony", "PHP", "MySQL", "Doctrine", "Twig", "JavaScript"],
+    gradient: "from-orange-900/30 to-red-900/30",
+    icon: "🔨",
+    githubUrl: "https://github.com/Razdsgn",
+  },
+  {
+    title: "Symphony Peshpe — En développement",
+    description:
+      "Nouveau projet web en cours de développement. Conception de l'architecture applicative avec attention particulière à la qualité du code, structure des formulaires et couverture de tests PHPUnit.",
+    tags: ["Symfony", "PHP", "PHPUnit", "Architecture", "TDD"],
+    gradient: "from-green-900/30 to-teal-900/30",
+    icon: "🚀",
+    githubUrl: "https://github.com/Razdsgn",
+  },
+];
 
-  const projects = [
-    {
-      slug: "dopegood",
-      title: "Dopegood",
-      description: "Brand Identity, logo design, E-commerce website & mobile UI/UX, and custom web 3D design for a modern furniture brand.",
-      images: [
-        "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=1600&q=80",
-        "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1600&q=80",
-      ],
-      liveUrl: "https://dopegood.com",
-      behanceUrl: "https://www.behance.net/gallery/164138733/Dopegood",
-      awards: [
-        {
-          name: "Awwwards",
-          awards: ["Site of the Day", "Developer Award", "Honorable Mention"],
-          href: "https://www.awwwards.com",
-        },
-        {
-          name: "CSS Design Awards",
-          awards: ["UI Design", "UX Design", "Innovation"],
-          href: "https://www.cssdesignawards.com",
-        },
-      ],
-    },
-    {
-      slug: "am-arc",
-      title: "AM-ARC",
-      description: "Brand Identity, logo design, website & mobile UI/UX with custom 3D visualizations for an architectural studio.",
-      images: [
-        "https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=1600&q=80",
-      ],
-      liveUrl: "https://am-arc.com",
-      behanceUrl: "https://www.behance.net/gallery/149464731/AM-ARC",
-      awards: [
-        {
-          name: "CSS Design Awards",
-          awards: ["UI Design", "UX Design", "Innovation"],
-          href: "https://www.cssdesignawards.com",
-        },
-      ],
-    },
-    {
-      slug: "vimcosmo",
-      title: "Vimcosmo",
-      description: "E-commerce website & mobile app UI/UX and art direction for a modern beauty and cosmetics brand.",
-      images: [
-        "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=1600&q=80",
-      ],
-      liveUrl: "https://vimcosmo.com",
-      behanceUrl: "https://www.behance.net/gallery/150352223/Vimcosmo",
-    },
-  ];
+const experiences = [
+  {
+    period: "2025 — présent",
+    title: "Développeur Web en formation",
+    company: "ENI École Informatique — Alternance recherchée (oct. 2026)",
+    description:
+      "Développement full-stack d'applications web Symfony. Conception d'architectures orientées services, système multi-rôles, calendriers interactifs, cartes géolocalisées et intégration d'API. Fort accent sur la qualité du code et les tests PHPUnit.",
+  },
+  {
+    period: "05/2024",
+    title: "Testeur Logiciel — Stage",
+    company: "Harmonic France",
+    description:
+      "Conception de plans de test, exécution de tests manuels et rédaction de rapports de test pour des logiciels industriels.",
+  },
+  {
+    period: "11/2018 — 05/2022",
+    title: "Chef de Projet International",
+    company: "Astra Construction",
+    description:
+      "Coordination des équipes d'ingénierie, suivi de toutes les étapes projet, rapports financiers et respect des délais sur des projets internationaux.",
+  },
+  {
+    period: "02/2013 — 10/2018",
+    title: "Coordinateur de Projets",
+    company: "Razvorot Design — Europe de l'Est",
+    description:
+      "Coordination de campagnes publicitaires, relation clients et gestion des commandes designers à travers l'Europe de l'Est.",
+  },
+];
 
-  const awards = [
-    {
-      title: "Awwwards - Site of the Day",
-      project: "Dopegood.com",
-      image: "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&fit=crop&w=800&q=80",
-    },
-    {
-      title: "CSS Design Awards - WOTD",
-      project: "Deveb.co",
-      image: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=800&q=80",
-    },
-    {
-      title: "Awwwards - Developer Award",
-      project: "Dopegood.com",
-      image: "https://images.unsplash.com/photo-1614332287897-cdc485fa562d?auto=format&fit=crop&w=800&q=80",
-    },
-  ];
+const educations = [
+  {
+    period: "2025 — présent",
+    title: "Développeur Web et Web Mobile (BAC+3)",
+    school: "ENI École Informatique",
+  },
+  {
+    period: "11/2024 — 05/2025",
+    title: "Formation Tremplin Numérique",
+    school: "Les petits débrouillards / IMT Atlantique",
+  },
+  {
+    period: "2008 — 2013",
+    title: "Études techniques",
+    school: "Université Technique de Biélorussie",
+  },
+];
 
-  const skills = {
-    soft: [
-      "Art Direction",
-      "Leadership",
-      "Visual Design",
-      "Web UI/UX Design",
-      "Product Design",
-      "Digital Design",
-      "Branding",
-      "Web Animation",
-      "Mentoring",
-      "3D Design",
-      "User Interaction",
-      "Photography & Edit",
-    ],
-    hard: [
-      "Figma",
-      "Framer",
-      "Adobe XD",
-      "Spline",
-      "Lightroom",
-      "Photoshop",
-      "3Ds Max",
-      "Lumion",
-      "Illustrator",
-      "V-Ray",
-    ],
-  };
+function ProjectCard({ project, index }: { project: (typeof projects)[0]; index: number }) {
+  const [ref, isInView] = useInView({ threshold: 0.15 });
 
   return (
-    <main className="min-h-screen bg-[#0a0a0a] text-white">
-      {/* Hero Section */}
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 60 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.7, delay: index * 0.1 }}
+      className="group relative"
+    >
+      <div className={`relative rounded-2xl bg-gradient-to-br ${project.gradient} border border-zinc-800 p-8 md:p-12 overflow-hidden transition-all duration-500 group-hover:border-zinc-600`}>
+        {/* Background glow */}
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-white/[0.02] rounded-2xl" />
+
+        <div className="flex flex-col md:flex-row gap-8 items-start">
+          <div className="text-5xl md:text-6xl flex-shrink-0">{project.icon}</div>
+          <div className="flex-1">
+            <h3 className="text-2xl md:text-3xl font-bold mb-4 group-hover:text-white transition-colors">{project.title}</h3>
+            <p className="text-gray-400 mb-6 leading-relaxed">{project.description}</p>
+            <div className="flex flex-wrap gap-2 mb-6">
+              {project.tags.map((tag) => (
+                <span key={tag} className="px-3 py-1 text-xs bg-white/10 rounded-full border border-white/10">{tag}</span>
+              ))}
+            </div>
+            <a
+              href={project.githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-sm text-white/70 hover:text-white transition-colors"
+            >
+              <Github size={16} /> Voir sur GitHub <ExternalLink size={12} />
+            </a>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+export default function Home() {
+  const { scrollYProgress } = useScroll();
+  const opacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.15], [1, 0.9]);
+
+  const roles = [
+    "Développeur Web Full-Stack",
+    "Développeur Symfony / PHP",
+    "Ingénieur Back-end",
+    "Passionné UI/UX & Architecture",
+  ];
+
+  return (
+    <main className="min-h-screen bg-[#0a0a0a] text-white overflow-x-hidden">
+
+      {/* ───────────── HERO ───────────── */}
       <motion.section
         style={{ opacity, scale }}
         className="min-h-screen flex items-center justify-center px-6 relative"
       >
-        <div className="max-w-7xl w-full">
-          {/* Rotating roles */}
+        <div className="max-w-5xl w-full text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-gray-400 mb-8 text-center"
+            className="text-gray-400 mb-6 text-xl tracking-wide"
           >
             <RotatingText items={roles} />
           </motion.div>
 
-          {/* Main title */}
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-6xl md:text-8xl lg:text-9xl font-bold text-center mb-8"
+            transition={{ duration: 0.7, delay: 0.2 }}
+            className="text-6xl md:text-8xl lg:text-[9rem] font-bold tracking-tight mb-6 leading-none"
           >
-            Roman Khonyakov
+            Raman
+            <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-zinc-500">
+              Khaniakou
+            </span>
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-xl text-gray-400 text-center mb-4"
+            className="text-lg text-gray-400 mb-4"
           >
-            Based in Your Location
+            📍 Rennes, France
           </motion.p>
 
-          {/* Profile images */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            className="flex justify-center gap-4 mb-12"
-          >
-            {[1, 2, 3].map((i) => (
-              <motion.div
-                key={i}
-                whileHover={{ scale: 1.1, rotate: i % 2 === 0 ? 5 : -5 }}
-                className="w-24 h-24 md:w-32 md:h-32 rounded-2xl overflow-hidden"
-              >
-                <Image
-                  src={`https://images.unsplash.com/photo-150720721716${i}-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80`}
-                  alt="Profile"
-                  width={128}
-                  height={128}
-                  className="w-full h-full object-cover"
-                />
-              </motion.div>
-            ))}
-          </motion.div>
-
-          {/* Bio */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
-            className="max-w-3xl mx-auto text-center text-gray-300 mb-12 leading-relaxed"
+            transition={{ duration: 0.6, delay: 0.55 }}
+            className="max-w-2xl mx-auto text-gray-300 mb-12 leading-relaxed text-lg"
           >
-            Winner of the world's most prestigious web design awards in the fields of UI, UX, and
-            innovation. With a diverse background in art direction, design leadership, website and app
-            UI/UX design, 3D design, and branding, I bring a well-rounded skill set to every project I
-            take on.
+            Développeur web en formation à l'ENI Informatique. Je conçois des applications Symfony full-stack avec une attention particulière à l'architecture, à la qualité du code et à l'expérience utilisateur. Mon expérience antérieure comme chef de projet m'apporte rigueur, autonomie et sens des priorités.
           </motion.p>
 
-          {/* CTA Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1 }}
+            transition={{ duration: 0.6, delay: 0.7 }}
             className="flex flex-wrap justify-center gap-4"
           >
             <MagneticButton href="#work">
-              View Selected Work <ChevronRight size={20} />
+              Voir mes projets <ChevronRight size={20} />
             </MagneticButton>
-            <MagneticButton href="/cv.pdf">
-              View CV <ExternalLink size={20} />
+            <MagneticButton href="mailto:rkhonyakov@gmail.com">
+              Me contacter <Mail size={20} />
             </MagneticButton>
           </motion.div>
         </div>
@@ -451,7 +324,7 @@ export default function Home() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.5, duration: 1 }}
+          transition={{ delay: 1.8, duration: 1 }}
           className="absolute bottom-8 left-1/2 -translate-x-1/2"
         >
           <motion.div
@@ -464,221 +337,166 @@ export default function Home() {
         </motion.div>
       </motion.section>
 
-      {/* Stats Section */}
-      <section className="py-24 px-6 border-y border-zinc-800">
-        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
-          <AnimatedStat end={27} label="Awards Won" suffix="+" />
-          <AnimatedStat end={40} label="Projects Completed" suffix="+" />
-          <AnimatedStat end={5} label="Years Experience" suffix="+" />
-          <AnimatedStat end={100} label="Client Satisfaction" suffix="%" />
+      {/* ───────────── STATS ───────────── */}
+      <section className="py-20 px-6 border-y border-zinc-800">
+        <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
+          <AnimatedStat end={22} label="Entités Doctrine" suffix="" />
+          <AnimatedStat end={3} label="Projets full-stack" suffix="+" />
+          <AnimatedStat end={4} label="Langues maîtrisées" suffix="" />
+          <AnimatedStat end={10} label="Ans d'expérience pro" suffix="+" />
         </div>
       </section>
 
-      {/* About Section */}
-      <section id="about" className="py-24 px-6">
-        <div className="max-w-7xl mx-auto">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-4xl md:text-5xl font-bold mb-16"
-          >
-            About
-          </motion.h2>
-
-          <div className="grid md:grid-cols-2 gap-12">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-            >
-              <h3 className="text-2xl font-bold mb-8">Experience</h3>
-
-              <div className="space-y-8">
-                <div>
-                  <div className="text-sm text-gray-400 mb-2">2020 - Present</div>
-                  <h4 className="text-xl font-bold mb-2">Creative Art Director</h4>
-                  <div className="text-gray-400 mb-4">Deveb Digital Agency</div>
-                  <p className="text-gray-300">
-                    As the sole creative art director and designer at Deveb for +3 years, I have designed
-                    and developed all the visual assets, including website and mobile UI/UX designs, web
-                    animations mockups, and brandings. My skills led to Deveb winning +27 international
-                    design awards.
-                  </p>
-                </div>
-
-                <div>
-                  <div className="text-sm text-gray-400 mb-2">2018 - 2020</div>
-                  <h4 className="text-xl font-bold mb-2">Freelance Designer</h4>
-                  <div className="text-gray-400 mb-4">Upwork</div>
-                  <p className="text-gray-300">
-                    Maintained 100% job success rate on Upwork, delivering exceptional designs and solutions
-                    for 40+ projects. Developed highly effective brand identities and strategies for startups
-                    and small businesses based on market research and client feedback.
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.4 }}
-            >
-              <h3 className="text-2xl font-bold mb-8">Education</h3>
-
-              <div className="space-y-8">
-                <div>
-                  <div className="text-sm text-gray-400 mb-2">2018 - 2020</div>
-                  <h4 className="text-xl font-bold mb-2">Master of Design</h4>
-                  <div className="text-gray-400">Azad University Of Mashhad</div>
-                </div>
-
-                <div>
-                  <div className="text-sm text-gray-400 mb-2">2015 - 2018</div>
-                  <h4 className="text-xl font-bold mb-2">Bachelor of Design</h4>
-                  <div className="text-gray-400">Azad University Of Mashhad</div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Work Section */}
-      <section id="work" className="py-24 px-6 bg-[#050505]">
-        <div className="max-w-7xl mx-auto">
+      {/* ───────────── PROJECTS ───────────── */}
+      <section id="work" className="py-24 px-6">
+        <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Selected Work</h2>
-            <p className="text-xl text-gray-400">Portfolio</p>
+            <h2 className="text-4xl md:text-5xl font-bold mb-3">Projets</h2>
+            <p className="text-xl text-gray-400">Réalisations sélectionnées</p>
           </motion.div>
 
-          <div className="grid gap-24">
+          <div className="flex flex-col gap-8">
             {projects.map((project, idx) => (
-              <ProjectCard key={idx} project={project} />
+              <ProjectCard key={idx} project={project} index={idx} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* Awards Section */}
-      <section id="awards" className="py-24 px-6">
-        <div className="max-w-7xl mx-auto">
+      {/* ───────────── SKILLS ───────────── */}
+      <section id="skills" className="py-24 px-6 bg-[#050505]">
+        <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Recognition</h2>
-            <p className="text-xl text-gray-400">Honors & Awards</p>
+            <h2 className="text-4xl md:text-5xl font-bold mb-3">Compétences</h2>
+            <p className="text-xl text-gray-400">Stack technique</p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {awards.map((award, idx) => (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {skillCategories.map((cat, i) => (
               <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 20 }}
+                key={cat.label}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
-                whileHover={{ y: -8 }}
-                className="group cursor-pointer"
+                transition={{ delay: i * 0.1 }}
+                whileHover={{ y: -6 }}
+                className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 hover:border-zinc-600 transition-all duration-300"
               >
-                <motion.div 
-                  className="relative aspect-[4/3] rounded-2xl overflow-hidden mb-4"
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-                >
-                  <Image
-                    src={award.image}
-                    alt={award.title}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                  />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500" />
-                </motion.div>
-                <h4 className="font-bold mb-1 group-hover:text-gray-300 transition-colors duration-300">{award.title}</h4>
-                <p className="text-gray-400 text-sm">{award.project}</p>
+                <div className="flex items-center gap-3 mb-5 text-white/80">
+                  {cat.icon}
+                  <span className="font-semibold">{cat.label}</span>
+                </div>
+                <div className="flex flex-col gap-2">
+                  {cat.items.map((item) => (
+                    <span key={item} className="text-sm text-gray-400">{item}</span>
+                  ))}
+                </div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Skills Section */}
-      <section id="skills" className="py-24 px-6 bg-[#050505]">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
+      {/* ───────────── ABOUT / EXPERIENCE ───────────── */}
+      <section id="about" className="py-24 px-6">
+        <div className="max-w-5xl mx-auto">
+          <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="mb-16"
+            className="text-4xl md:text-5xl font-bold mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Expertise</h2>
-            <p className="text-xl text-gray-400">Skills & Tools</p>
-          </motion.div>
+            Parcours
+          </motion.h2>
 
           <div className="grid md:grid-cols-2 gap-12">
+            {/* Experience */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
             >
-              <h3 className="text-2xl font-bold mb-6">Soft Skills</h3>
-              <div className="flex flex-wrap gap-3">
-                {skills.soft.map((skill, idx) => (
-                  <motion.span
-                    key={idx}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
+              <h3 className="text-2xl font-bold mb-8 text-gray-200">Expérience</h3>
+              <div className="relative border-l border-zinc-800 pl-6 space-y-10">
+                {experiences.map((exp, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -10 }}
+                    whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: idx * 0.05 }}
-                    whileHover={{ 
-                      scale: 1.08,
-                      y: -4,
-                      backgroundColor: "rgba(255, 255, 255, 0.15)",
-                    }}
-                    
-                    className="px-4 py-2 bg-zinc-900 rounded-full text-sm cursor-pointer transition-shadow hover:shadow-lg hover:shadow-white/5"
+                    transition={{ delay: 0.1 * i }}
+                    className="relative"
                   >
-                    {skill}
-                  </motion.span>
+                    <span className="absolute -left-[1.6rem] top-1 w-3 h-3 rounded-full bg-zinc-700 border-2 border-zinc-500" />
+                    <div className="text-xs text-gray-500 mb-1">{exp.period}</div>
+                    <h4 className="text-lg font-bold mb-1">{exp.title}</h4>
+                    <div className="text-sm text-gray-400 mb-2">{exp.company}</div>
+                    <p className="text-sm text-gray-500 leading-relaxed">{exp.description}</p>
+                  </motion.div>
                 ))}
               </div>
             </motion.div>
 
+            {/* Education + Languages */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
+              transition={{ delay: 0.4 }}
             >
-              <h3 className="text-2xl font-bold mb-6">Hard Skills</h3>
-              <div className="flex flex-wrap gap-3">
-                {skills.hard.map((skill, idx) => (
-                  <motion.span
-                    key={idx}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
+              <h3 className="text-2xl font-bold mb-8 text-gray-200">Formation</h3>
+              <div className="relative border-l border-zinc-800 pl-6 space-y-8 mb-14">
+                {educations.map((edu, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -10 }}
+                    whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: idx * 0.05 }}
-                    whileHover={{ 
-                      scale: 1.08,
-                      y: -4,
-                      backgroundColor: "rgba(255, 255, 255, 0.15)",
-                    }}
-                    
-                    className="px-4 py-2 bg-zinc-900 rounded-full text-sm cursor-pointer transition-shadow hover:shadow-lg hover:shadow-white/5"
+                    transition={{ delay: 0.1 * i }}
+                    className="relative"
                   >
-                    {skill}
-                  </motion.span>
+                    <span className="absolute -left-[1.6rem] top-1 w-3 h-3 rounded-full bg-zinc-700 border-2 border-zinc-500" />
+                    <div className="text-xs text-gray-500 mb-1">{edu.period}</div>
+                    <h4 className="text-lg font-bold mb-1">{edu.title}</h4>
+                    <div className="text-sm text-gray-400">{edu.school}</div>
+                  </motion.div>
+                ))}
+              </div>
+
+              <h3 className="text-2xl font-bold mb-6 text-gray-200">Langues</h3>
+              <div className="space-y-4">
+                {[
+                  { lang: "Russe", level: "Natif", pct: 100 },
+                  { lang: "Biélorusse", level: "Natif", pct: 100 },
+                  { lang: "Anglais", level: "Avancé", pct: 80 },
+                  { lang: "Français", level: "Intermédiaire", pct: 60 },
+                ].map(({ lang, level, pct }) => (
+                  <div key={lang}>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span>{lang}</span>
+                      <span className="text-gray-400">{level}</span>
+                    </div>
+                    <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                      <motion.div
+                        className="h-full bg-white rounded-full"
+                        initial={{ width: 0 }}
+                        whileInView={{ width: `${pct}%` }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1, delay: 0.3 }}
+                      />
+                    </div>
+                  </div>
                 ))}
               </div>
             </motion.div>
@@ -686,9 +504,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section id="contact" className="py-24 px-6">
-        <div className="max-w-7xl mx-auto">
+      {/* ───────────── CONTACT ───────────── */}
+      <section id="contact" className="py-24 px-6 bg-[#050505]">
+        <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -696,74 +514,54 @@ export default function Home() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl md:text-6xl font-bold mb-6">
-              Let's create something <br />
-              award‑winning.
+              Construisons quelque<br />
+              chose ensemble.
             </h2>
-            <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-              I collaborate with teams and brands who care deeply about the craft of digital experiences
-              — from early-stage concepts to fully-realized products and campaigns.
+            <p className="text-xl text-gray-400 max-w-xl mx-auto">
+              Je recherche une alternance en développement web (BAC+3) à partir d'octobre 2026. N'hésitez pas à me contacter !
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-12 mb-16">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="text-center"
-            >
-              <div className="w-16 h-16 rounded-full bg-zinc-900 flex items-center justify-center mx-auto mb-4">
-                <Mail className="w-6 h-6" />
-              </div>
-              <h4 className="font-bold mb-2">Email</h4>
-              <a href="mailto:your@email.com" className="text-gray-400 hover:text-white">
-                your@email.com
-              </a>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="text-center"
-            >
-              <div className="w-16 h-16 rounded-full bg-zinc-900 flex items-center justify-center mx-auto mb-4">
-                <Phone className="w-6 h-6" />
-              </div>
-              <h4 className="font-bold mb-2">Phone</h4>
-              <a href="tel:+11234567890" className="text-gray-400 hover:text-white">
-                +1 (123) 456-7890
-              </a>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-              className="text-center"
-            >
-              <div className="w-16 h-16 rounded-full bg-zinc-900 flex items-center justify-center mx-auto mb-4">
-                <MapPin className="w-6 h-6" />
-              </div>
-              <h4 className="font-bold mb-2">Location</h4>
-              <p className="text-gray-400">Based in Your City</p>
-            </motion.div>
+          <div className="grid md:grid-cols-3 gap-8 mb-16">
+            {[
+              { icon: <Mail className="w-6 h-6" />, label: "Email", value: "rkhonyakov@gmail.com", href: "mailto:rkhonyakov@gmail.com" },
+              { icon: <Phone className="w-6 h-6" />, label: "Téléphone", value: "07 63 24 37 44", href: "tel:+33763243744" },
+              { icon: <MapPin className="w-6 h-6" />, label: "Localisation", value: "Rennes, France", href: null },
+            ].map((item, idx) => (
+              <motion.div
+                key={item.label}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+                className="text-center"
+              >
+                <div className="w-16 h-16 rounded-full bg-zinc-900 border border-zinc-700 flex items-center justify-center mx-auto mb-4">
+                  {item.icon}
+                </div>
+                <h4 className="font-bold mb-2">{item.label}</h4>
+                {item.href ? (
+                  <a href={item.href} className="text-gray-400 hover:text-white transition-colors">{item.value}</a>
+                ) : (
+                  <p className="text-gray-400">{item.value}</p>
+                )}
+              </motion.div>
+            ))}
           </div>
 
-          {/* Social Links */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="flex justify-center gap-6"
+            className="flex justify-center gap-8"
           >
-            {["LinkedIn", "Behance", "Dribbble", "Instagram", "Twitter"].map((social, idx) => (
+            {[
+              { label: "LinkedIn", href: "https://linkedin.com/in/romankh", icon: <Linkedin size={18} /> },
+              { label: "GitHub", href: "https://github.com/romankh", icon: <Github size={18} /> },
+            ].map((social, idx) => (
               <motion.a
-                key={social}
-                href={`https://${social.toLowerCase()}.com`}
+                key={social.label}
+                href={social.href}
                 target="_blank"
                 rel="noopener noreferrer"
                 initial={{ opacity: 0, y: 20 }}
@@ -771,20 +569,20 @@ export default function Home() {
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
                 whileHover={{ y: -5 }}
-                className="text-gray-400 hover:text-white transition-colors"
+                className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm"
               >
-                {social} ↗
+                {social.icon} {social.label} ↗
               </motion.a>
             ))}
           </motion.div>
         </div>
       </section>
 
-      {/* Footer */}
+      {/* ───────────── FOOTER ───────────── */}
       <footer className="py-8 px-6 border-t border-zinc-800">
-        <div className="max-w-7xl mx-auto text-center text-gray-400 text-sm">
-          <p>© 2026 Your Name. All rights reserved.</p>
-          <p className="mt-2">Designed for a premium, award-level digital presence.</p>
+        <div className="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-gray-500 text-sm">
+          <p>© 2026 Raman Khaniakou. Tous droits réservés.</p>
+          <p>Développeur Web Full-Stack · Rennes, France</p>
         </div>
       </footer>
     </main>
