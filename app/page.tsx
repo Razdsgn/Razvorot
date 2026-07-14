@@ -1,44 +1,121 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import Link from "next/link";
-import { ChevronRight, ExternalLink, Mail, Phone, MapPin, Github, Linkedin, Code2, Database, Server, Palette } from "lucide-react";
+import { useState, useEffect, useRef, useMemo } from "react";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useSpring,
+  useMotionValue,
+  AnimatePresence,
+} from "framer-motion";
+import {
+  ChevronRight,
+  ExternalLink,
+  Mail,
+  Phone,
+  MapPin,
+  Github,
+  Linkedin,
+  Code2,
+  Database,
+  Server,
+  Palette,
+  Layers3,
+  Sparkles,
+} from "lucide-react";
 
-function useInView(options = {}) {
-  const [isInView, setIsInView] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+/* ───────────────────────── Custom cursor ───────────────────────── */
+function CustomCursor() {
+  const dotX = useMotionValue(-100);
+  const dotY = useMotionValue(-100);
+  const ringX = useSpring(dotX, { stiffness: 140, damping: 20 });
+  const ringY = useSpring(dotY, { stiffness: 140, damping: 20 });
 
   useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      setIsInView(entry.isIntersecting);
-    }, options);
-    if (ref.current) observer.observe(ref.current);
-    return () => { if (ref.current) observer.unobserve(ref.current); };
-  }, []);
+    const move = (e: MouseEvent) => {
+      dotX.set(e.clientX);
+      dotY.set(e.clientY);
+    };
+    window.addEventListener("mousemove", move);
+    return () => window.removeEventListener("mousemove", move);
+  }, [dotX, dotY]);
 
-  return [ref, isInView] as const;
+  return (
+    <>
+      <motion.div className="cursor-dot" style={{ left: dotX, top: dotY }} />
+      <motion.div className="cursor-ring" style={{ left: ringX, top: ringY }} />
+    </>
+  );
 }
 
+/* ───────────────────────── Background blobs ───────────────────────── */
+function BackgroundBlobs() {
+  return (
+    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0" aria-hidden>
+      <div className="blob blob-1 w-[520px] h-[520px] bg-blue-600 top-[-140px] left-[-140px]" />
+      <div className="blob blob-2 w-[440px] h-[440px] bg-purple-700 bottom-[4%] right-[-120px]" />
+      <div className="blob blob-3 w-[320px] h-[320px] bg-cyan-500 top-[38%] left-[42%]" />
+    </div>
+  );
+}
+
+/* ───────────────────────── Floating particles ───────────────────────── */
+function Particles() {
+  const particles = useMemo(
+    () =>
+      Array.from({ length: 18 }, (_, i) => ({
+        id: i,
+        size: (i % 3) + 1,
+        left: (i * 17) % 100,
+        delay: (i * 0.7) % 8,
+        duration: 12 + (i % 6) * 2,
+        opacity: 0.12 + (i % 4) * 0.07,
+      })),
+    []
+  );
+
+  return (
+    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0" aria-hidden>
+      {particles.map((p) => (
+        <span
+          key={p.id}
+          className="particle"
+          style={{
+            width: p.size,
+            height: p.size,
+            left: `${p.left}%`,
+            bottom: "-10px",
+            opacity: p.opacity,
+            animationDuration: `${p.duration}s`,
+            animationDelay: `${p.delay}s`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+/* ───────────────────────── Rotating text ───────────────────────── */
 function RotatingText({ items }: { items: string[] }) {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const timer = setInterval(() => {
       setIndex((prev) => (prev + 1) % items.length);
-    }, 3000);
-    return () => clearInterval(interval);
+    }, 2600);
+    return () => clearInterval(timer);
   }, [items.length]);
 
   return (
-    <div className="relative h-[1.2em] overflow-hidden">
+    <div className="relative h-[1.3em] overflow-hidden">
       <AnimatePresence mode="wait">
         <motion.span
           key={index}
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: -20, opacity: 0 }}
-          transition={{ duration: 0.5 }}
+          initial={{ y: 22, opacity: 0, filter: "blur(6px)" }}
+          animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+          exit={{ y: -22, opacity: 0, filter: "blur(6px)" }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
           className="absolute inset-0"
         >
           {items[index]}
@@ -48,110 +125,153 @@ function RotatingText({ items }: { items: string[] }) {
   );
 }
 
-function MagneticButton({ children, href, external }: { children: React.ReactNode; href: string; external?: boolean }) {
+/* ───────────────────────── Magnetic button ───────────────────────── */
+function MagneticButton({
+  children,
+  href,
+  variant = "primary",
+}: {
+  children: React.ReactNode;
+  href: string;
+  variant?: "primary" | "outline";
+}) {
+  const ref = useRef<HTMLAnchorElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const buttonRef = useRef<HTMLAnchorElement>(null);
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!buttonRef.current) return;
-    const rect = buttonRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left - rect.width / 2;
-    const y = e.clientY - rect.top - rect.height / 2;
-    setPosition({ x: x * 0.3, y: y * 0.3 });
-  };
 
   return (
     <motion.a
-      ref={buttonRef}
+      ref={ref}
       href={href}
-      target={external ? "_blank" : undefined}
-      rel={external ? "noopener noreferrer" : undefined}
-      onMouseMove={handleMouseMove}
+      onMouseMove={(e) => {
+        if (!ref.current) return;
+        const rect = ref.current.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        setPosition({ x: x * 0.25, y: y * 0.25 });
+      }}
       onMouseLeave={() => setPosition({ x: 0, y: 0 })}
       animate={position}
-      transition={{ type: "spring", stiffness: 150, damping: 15 }}
-      className="inline-flex items-center gap-2 px-8 py-4 bg-white text-black rounded-full font-medium hover:bg-gray-100 transition-colors"
+      transition={{ type: "spring", stiffness: 180, damping: 18 }}
+      whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.98 }}
+      className={
+        variant === "primary"
+          ? "inline-flex items-center gap-2 rounded-full bg-white px-8 py-4 font-semibold text-black transition-colors hover:bg-gray-100"
+          : "inline-flex items-center gap-2 rounded-full border border-white/20 px-8 py-4 font-semibold text-white transition-colors hover:border-white/50 hover:bg-white/5"
+      }
     >
       {children}
     </motion.a>
   );
 }
 
+/* ───────────────────────── Animated stat counter ───────────────────────── */
 function AnimatedStat({ end, label, suffix = "" }: { end: number; label: string; suffix?: string }) {
   const [count, setCount] = useState(0);
-  const [ref, isInView] = useInView({ threshold: 0.5 });
+  const ref = useRef<HTMLDivElement>(null);
+  const [seen, setSeen] = useState(false);
 
   useEffect(() => {
-    if (!isInView) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setSeen(true);
+      },
+      { threshold: 0.45 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!seen) return;
     let start = 0;
-    const duration = 2000;
+    const duration = 1600;
     const increment = end / (duration / 16);
     const timer = setInterval(() => {
       start += increment;
-      if (start >= end) { setCount(end); clearInterval(timer); }
-      else { setCount(Math.floor(start)); }
+      if (start >= end) {
+        setCount(end);
+        clearInterval(timer);
+      } else {
+        setCount(Math.floor(start));
+      }
     }, 16);
     return () => clearInterval(timer);
-  }, [isInView, end]);
+  }, [seen, end]);
 
   return (
     <div ref={ref} className="text-center">
-      <div className="text-5xl font-bold mb-2">{count}{suffix}</div>
-      <div className="text-gray-400">{label}</div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="mb-2 text-4xl font-bold md:text-5xl tabular-nums"
+      >
+        {count}
+        {suffix}
+      </motion.div>
+      <div className="text-sm text-gray-400">{label}</div>
     </div>
   );
 }
 
+/* ───────────────────────── Data ───────────────────────── */
 const skillCategories = [
   {
-    icon: <Server size={20} />,
+    icon: <Server size={18} />,
     label: "Back-end",
-    items: ["PHP 8.4", "Symfony 7", "Java", "Python", "SQL", "Doctrine ORM", "REST API"],
+    items: ["PHP 8.4", "Symfony 7", "Java", "Python", "SQL", "Doctrine ORM"],
   },
   {
-    icon: <Code2 size={20} />,
+    icon: <Code2 size={18} />,
     label: "Front-end",
-    items: ["JavaScript", "TypeScript", "HTML / CSS", "Twig", "Stimulus", "Hotwire", "Angular"],
+    items: ["JavaScript", "TypeScript", "HTML / CSS", "Twig", "Stimulus", "Angular"],
   },
   {
-    icon: <Database size={20} />,
+    icon: <Database size={18} />,
     label: "Outils & DevOps",
-    items: ["Git / GitHub", "Docker", "PHPUnit", "Leaflet / OSM", "FullCalendar", "RRule", "iCalendar"],
+    items: ["Git / GitHub", "Docker", "PHPUnit", "Leaflet / OSM", "RRule", "iCalendar"],
   },
   {
-    icon: <Palette size={20} />,
-    label: "Design & Architecture",
-    items: ["Figma", "UX / UI", "MVC", "Services Architecture", "Multi-roles", "Migrations"],
+    icon: <Palette size={18} />,
+    label: "Design & UX",
+    items: ["Figma", "UX / UI", "MVC", "Architecture Services", "Multi-rôles"],
   },
 ];
 
 const projects = [
   {
-    title: "Kvas & Cidre — Gestion associative",
+    title: "Kvas & Cidre",
+    subtitle: "Gestion associative full-stack",
     description:
-      "Application web full-stack de gestion associative avec Symfony 7 et PHP 8.4. Système multi-rôles (Admin, Teacher, User, PaymentManager), agendas récurrents avec gestion des jours fériés et vacances scolaires (RRule), calendrier interactif (Stimulus/Hotwire), carte géolocalisée (Leaflet/OSM), gestion des paiements, export CSV et envoi d'emails automatisés. 22 entités Doctrine, architecture orientée services.",
+      "Application Symfony 7 / PHP 8.4 avec système multi-rôles, agendas récurrents RRule, calendrier interactif Stimulus/Hotwire, carte Leaflet/OSM, paiements, export CSV et emails automatisés. 22 entités Doctrine et architecture orientée services.",
     tags: ["Symfony 7", "PHP 8.4", "Doctrine ORM", "RRule", "Leaflet", "PHPUnit", "Stimulus"],
-    gradient: "from-blue-900/30 to-purple-900/30",
+    color: "#3b82f6",
+    gradient: "from-blue-900/40 to-purple-900/30",
     icon: "🗓️",
-    githubUrl: "https://github.com/Razdsgn",
+    number: "01",
   },
   {
-    title: "Enchere — Système d'enchères",
+    title: "Enchere",
+    subtitle: "Système d'enchères en ligne",
     description:
-      "Système d'enchères en ligne développé en full-stack. Interface utilisateur moderne avec logique métier Symfony, gestion des offres en temps réel, sécurité des accès et base de données optimisée. Architecture MVC robuste avec Doctrine et formulaires Symfony.",
+      "Plateforme d'enchères full-stack avec logique métier Symfony, sécurité des accès, base MySQL optimisée et interface Twig moderne pensée pour la lisibilité et la rapidité d'usage.",
     tags: ["Symfony", "PHP", "MySQL", "Doctrine", "Twig", "JavaScript"],
-    gradient: "from-orange-900/30 to-red-900/30",
+    color: "#f97316",
+    gradient: "from-orange-900/40 to-red-900/30",
     icon: "🔨",
-    githubUrl: "https://github.com/Razdsgn",
+    number: "02",
   },
   {
-    title: "Symphony Peshpe — En développement",
+    title: "Symphony Peshpe",
+    subtitle: "Projet en cours de développement",
     description:
-      "Nouveau projet web en cours de développement. Conception de l'architecture applicative avec attention particulière à la qualité du code, structure des formulaires et couverture de tests PHPUnit.",
-    tags: ["Symfony", "PHP", "PHPUnit", "Architecture", "TDD"],
-    gradient: "from-green-900/30 to-teal-900/30",
+      "Nouveau projet web en cours avec attention portée à la structure applicative, la qualité du code, les tests PHPUnit et une base solide pour l'évolution du produit.",
+    tags: ["Symfony", "PHP", "PHPUnit", "TDD", "Architecture"],
+    color: "#22c55e",
+    gradient: "from-green-900/40 to-teal-900/30",
     icon: "🚀",
-    githubUrl: "https://github.com/Razdsgn",
+    number: "03",
   },
 ];
 
@@ -159,30 +279,30 @@ const experiences = [
   {
     period: "2025 — présent",
     title: "Développeur Web en formation",
-    company: "ENI École Informatique — Alternance recherchée (oct. 2026)",
+    company: "ENI École Informatique",
     description:
-      "Développement full-stack d'applications web Symfony. Conception d'architectures orientées services, système multi-rôles, calendriers interactifs, cartes géolocalisées et intégration d'API. Fort accent sur la qualité du code et les tests PHPUnit.",
+      "Développement full-stack Symfony, architecture orientée services, formulaires avancés, calendrier interactif, cartes géolocalisées et tests PHPUnit.",
   },
   {
     period: "05/2024",
     title: "Testeur Logiciel — Stage",
     company: "Harmonic France",
     description:
-      "Conception de plans de test, exécution de tests manuels et rédaction de rapports de test pour des logiciels industriels.",
+      "Conception de plans de test, exécution de tests manuels et rédaction de rapports structurés.",
   },
   {
     period: "11/2018 — 05/2022",
     title: "Chef de Projet International",
     company: "Astra Construction",
     description:
-      "Coordination des équipes d'ingénierie, suivi de toutes les étapes projet, rapports financiers et respect des délais sur des projets internationaux.",
+      "Coordination d'équipes, suivi de budgets, respect des délais et pilotage global des étapes projet.",
   },
   {
     period: "02/2013 — 10/2018",
     title: "Coordinateur de Projets",
-    company: "Razvorot Design — Europe de l'Est",
+    company: "Razvorot Design",
     description:
-      "Coordination de campagnes publicitaires, relation clients et gestion des commandes designers à travers l'Europe de l'Est.",
+      "Coordination des campagnes publicitaires, relation clients et gestion de commandes designers.",
   },
 ];
 
@@ -204,50 +324,149 @@ const educations = [
   },
 ];
 
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1 } },
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 26 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
+/* ───────────────────────── Project card ───────────────────────── */
 function ProjectCard({ project, index }: { project: (typeof projects)[0]; index: number }) {
-  const [ref, isInView] = useInView({ threshold: 0.15 });
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const y = useTransform(scrollYProgress, [0, 1], [32, -32]);
+  const [hovered, setHovered] = useState(false);
 
   return (
     <motion.div
       ref={ref}
       initial={{ opacity: 0, y: 60 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.7, delay: index * 0.1 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.65, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       className="group relative"
     >
-      <div className={`relative rounded-2xl bg-gradient-to-br ${project.gradient} border border-zinc-800 p-8 md:p-12 overflow-hidden transition-all duration-500 group-hover:border-zinc-600`}>
-        {/* Background glow */}
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-white/[0.02] rounded-2xl" />
+      <motion.div
+        whileHover={{ scale: 1.01, borderColor: "rgba(255,255,255,0.18)" }}
+        transition={{ duration: 0.3 }}
+        className={`relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br ${project.gradient} p-8 md:p-10`}
+      >
+        <AnimatePresence>
+          {hovered && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="pointer-events-none absolute inset-0"
+              style={{
+                background: `radial-gradient(360px circle at 20% 20%, ${project.color}22, transparent 60%)`,
+              }}
+            />
+          )}
+        </AnimatePresence>
 
-        <div className="flex flex-col md:flex-row gap-8 items-start">
-          <div className="text-5xl md:text-6xl flex-shrink-0">{project.icon}</div>
+        <motion.div style={{ y }} className="absolute right-6 top-4 select-none text-7xl font-black text-white/5 md:text-8xl">
+          {project.number}
+        </motion.div>
+
+        <div className="relative flex flex-col gap-6 md:flex-row md:items-start">
+          <motion.div
+            animate={hovered ? { rotate: [0, -6, 6, 0], scale: 1.08 } : { rotate: 0, scale: 1 }}
+            transition={{ duration: 0.45 }}
+            className="text-5xl"
+          >
+            {project.icon}
+          </motion.div>
+
           <div className="flex-1">
-            <h3 className="text-2xl md:text-3xl font-bold mb-4 group-hover:text-white transition-colors">{project.title}</h3>
-            <p className="text-gray-400 mb-6 leading-relaxed">{project.description}</p>
-            <div className="flex flex-wrap gap-2 mb-6">
+            <div className="mb-2 text-xs uppercase tracking-[0.24em] text-gray-500">{project.subtitle}</div>
+            <h3 className="mb-4 text-2xl font-bold md:text-3xl">{project.title}</h3>
+            <p className="mb-6 max-w-3xl text-gray-400 leading-relaxed">{project.description}</p>
+            <div className="mb-6 flex flex-wrap gap-2">
               {project.tags.map((tag) => (
-                <span key={tag} className="px-3 py-1 text-xs bg-white/10 rounded-full border border-white/10">{tag}</span>
+                <motion.span
+                  key={tag}
+                  whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.12)" }}
+                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-gray-200"
+                >
+                  {tag}
+                </motion.span>
               ))}
             </div>
-            <a
-              href={project.githubUrl}
+            <motion.a
+              href="https://github.com/Razdsgn"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm text-white/70 hover:text-white transition-colors"
+              whileHover={{ x: 4 }}
+              className="inline-flex items-center gap-2 text-sm text-white/70 transition-colors hover:text-white"
             >
-              <Github size={16} /> Voir sur GitHub <ExternalLink size={12} />
-            </a>
+              <Github size={15} /> Voir GitHub <ExternalLink size={12} />
+            </motion.a>
           </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+/* ───────────────────────── Currently building panel ───────────────────────── */
+function FloatingPanel() {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6 }}
+      className="glass rounded-3xl p-6 md:p-8"
+    >
+      <div className="mb-4 flex items-center gap-3 text-white/80">
+        <Layers3 size={18} />
+        <span className="text-sm font-semibold uppercase tracking-[0.22em] text-gray-400">Currently building</span>
+      </div>
+      <div className="grid gap-4 md:grid-cols-3">
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div className="mb-2 flex items-center gap-2 text-sm font-medium text-white">
+            <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
+            Symfony Architecture
+          </div>
+          <p className="text-sm text-gray-400">Service-oriented structure, clean form flows and reusable business logic.</p>
+        </div>
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div className="mb-2 flex items-center gap-2 text-sm font-medium text-white">
+            <span className="h-2.5 w-2.5 rounded-full bg-blue-400" />
+            Modern Interfaces
+          </div>
+          <p className="text-sm text-gray-400">Responsive portfolio layout with smooth transitions and interactive sections.</p>
+        </div>
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div className="mb-2 flex items-center gap-2 text-sm font-medium text-white">
+            <span className="h-2.5 w-2.5 rounded-full bg-fuchsia-400" />
+            Test & Quality
+          </div>
+          <p className="text-sm text-gray-400">PHPUnit-oriented workflow, debugging discipline and strong attention to detail.</p>
         </div>
       </div>
     </motion.div>
   );
 }
 
+/* ───────────────────────── MAIN PAGE ───────────────────────── */
 export default function Home() {
   const { scrollYProgress } = useScroll();
-  const opacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 0.15], [1, 0.9]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.1], [1, 0.18]);
+  const heroScale = useTransform(scrollYProgress, [0, 0.1], [1, 0.965]);
+  const heroY = useTransform(scrollYProgress, [0, 0.1], [0, -32]);
+  const scaleX = useSpring(scrollYProgress, { stiffness: 320, damping: 36, mass: 0.2 });
 
   const roles = [
     "Développeur Web Full-Stack",
@@ -257,334 +476,370 @@ export default function Home() {
   ];
 
   return (
-    <main className="min-h-screen bg-[#0a0a0a] text-white overflow-x-hidden">
+    <>
+      <CustomCursor />
+      <BackgroundBlobs />
+      <Particles />
 
-      {/* ───────────── HERO ───────────── */}
-      <motion.section
-        style={{ opacity, scale }}
-        className="min-h-screen flex items-center justify-center px-6 relative"
-      >
-        <div className="max-w-5xl w-full text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-gray-400 mb-6 text-xl tracking-wide"
-          >
-            <RotatingText items={roles} />
-          </motion.div>
+      {/* Scroll progress bar */}
+      <motion.div className="fixed left-0 right-0 top-0 z-50 h-[2px] origin-left bg-white" style={{ scaleX }} />
 
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="text-6xl md:text-8xl lg:text-[9rem] font-bold tracking-tight mb-6 leading-none"
-          >
-            Raman
-            <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-zinc-500">
-              Khaniakou
-            </span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-lg text-gray-400 mb-4"
-          >
-            📍 Rennes, France
-          </motion.p>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.55 }}
-            className="max-w-2xl mx-auto text-gray-300 mb-12 leading-relaxed text-lg"
-          >
-            Développeur web en formation à l'ENI Informatique. Je conçois des applications Symfony full-stack avec une attention particulière à l'architecture, à la qualité du code et à l'expérience utilisateur. Mon expérience antérieure comme chef de projet m'apporte rigueur, autonomie et sens des priorités.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.7 }}
-            className="flex flex-wrap justify-center gap-4"
-          >
-            <MagneticButton href="#work">
-              Voir mes projets <ChevronRight size={20} />
-            </MagneticButton>
-            <MagneticButton href="mailto:rkhonyakov@gmail.com">
-              Me contacter <Mail size={20} />
-            </MagneticButton>
-          </motion.div>
-        </div>
-
-        {/* Scroll indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.8, duration: 1 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+      <main className="relative z-10 min-h-screen overflow-x-hidden bg-[#0a0a0a]/90 text-white">
+        {/* ── HERO ── */}
+        <motion.section
+          style={{ opacity: heroOpacity, scale: heroScale, y: heroY }}
+          className="relative flex min-h-screen items-center justify-center px-6"
         >
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ repeat: Infinity, duration: 1.5 }}
-            className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center p-2"
-          >
-            <motion.div className="w-1 h-3 bg-white rounded-full" />
-          </motion.div>
-        </motion.div>
-      </motion.section>
+          <div className="w-full max-w-6xl text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="mb-6 text-xl tracking-wide text-gray-400"
+            >
+              <RotatingText items={roles} />
+            </motion.div>
 
-      {/* ───────────── STATS ───────────── */}
-      <section className="py-20 px-6 border-y border-zinc-800">
-        <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
-          <AnimatedStat end={22} label="Entités Doctrine" suffix="" />
-          <AnimatedStat end={3} label="Projets full-stack" suffix="+" />
-          <AnimatedStat end={4} label="Langues maîtrisées" suffix="" />
-          <AnimatedStat end={10} label="Ans d'expérience pro" suffix="+" />
-        </div>
-      </section>
+            <motion.h1
+              initial={{ opacity: 0, y: 34 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+              className="mb-6 text-6xl font-bold leading-none tracking-tight md:text-8xl lg:text-[8.5rem]"
+            >
+              Raman
+              <br />
+              <span className="bg-gradient-to-r from-white via-blue-200 to-zinc-500 bg-clip-text text-transparent">
+                Khaniakou
+              </span>
+            </motion.h1>
 
-      {/* ───────────── PROJECTS ───────────── */}
-      <section id="work" className="py-24 px-6">
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold mb-3">Projets</h2>
-            <p className="text-xl text-gray-400">Réalisations sélectionnées</p>
-          </motion.div>
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.35 }}
+              className="mb-4 text-lg text-gray-400"
+            >
+              📍 Rennes, France
+            </motion.p>
 
-          <div className="flex flex-col gap-8">
-            {projects.map((project, idx) => (
-              <ProjectCard key={idx} project={project} index={idx} />
-            ))}
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              className="mx-auto mb-12 max-w-3xl text-lg leading-relaxed text-gray-300"
+            >
+              Développeur web en formation à l&apos;ENI Informatique. Je conçois des applications
+              Symfony full-stack avec une attention particulière à l&apos;architecture, à la
+              qualité du code et à l&apos;expérience utilisateur.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.65 }}
+              className="flex flex-wrap justify-center gap-4"
+            >
+              <MagneticButton href="#work">
+                Voir mes projets <ChevronRight size={18} />
+              </MagneticButton>
+              <MagneticButton href="mailto:rkhonyakov@gmail.com" variant="outline">
+                Me contacter <Mail size={18} />
+              </MagneticButton>
+            </motion.div>
           </div>
-        </div>
-      </section>
 
-      {/* ───────────── SKILLS ───────────── */}
-      <section id="skills" className="py-24 px-6 bg-[#050505]">
-        <div className="max-w-5xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-16"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.7, duration: 1 }}
+            className="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-3">Compétences</h2>
-            <p className="text-xl text-gray-400">Stack technique</p>
+            <span className="text-xs uppercase tracking-[0.3em] text-gray-500">Scroll</span>
+            <motion.div
+              animate={{ y: [0, 8, 0] }}
+              transition={{ repeat: Infinity, duration: 1.4 }}
+              className="flex h-9 w-5 justify-center rounded-full border-2 border-white/20 pt-2"
+            >
+              <motion.div className="h-2 w-1 rounded-full bg-white/60" />
+            </motion.div>
           </motion.div>
+        </motion.section>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {skillCategories.map((cat, i) => (
-              <motion.div
-                key={cat.label}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                whileHover={{ y: -6 }}
-                className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 hover:border-zinc-600 transition-all duration-300"
-              >
-                <div className="flex items-center gap-3 mb-5 text-white/80">
-                  {cat.icon}
-                  <span className="font-semibold">{cat.label}</span>
-                </div>
-                <div className="flex flex-col gap-2">
-                  {cat.items.map((item) => (
-                    <span key={item} className="text-sm text-gray-400">{item}</span>
+        {/* ── STATS ── */}
+        <section className="border-y border-white/8 px-6 py-20">
+          <div className="mx-auto grid max-w-5xl grid-cols-2 gap-8 md:grid-cols-4">
+            <AnimatedStat end={22} label="Entités Doctrine" />
+            <AnimatedStat end={3} label="Projets full-stack" suffix="+" />
+            <AnimatedStat end={4} label="Langues maîtrisées" />
+            <AnimatedStat end={10} label="Ans d'expérience" suffix="+" />
+          </div>
+        </section>
+
+        {/* ── PROJECTS ── */}
+        <section id="work" className="px-6 py-24">
+          <div className="mx-auto max-w-5xl">
+            <motion.div
+              initial={{ opacity: 0, y: 22 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="mb-16"
+            >
+              <h2 className="mb-3 text-4xl font-bold md:text-5xl">Projets</h2>
+              <p className="text-xl text-gray-400">Réalisations sélectionnées</p>
+            </motion.div>
+
+            <div className="flex flex-col gap-8">
+              {projects.map((project, index) => (
+                <ProjectCard key={project.title} project={project} index={index} />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── CURRENTLY BUILDING ── */}
+        <section className="px-6 pb-8">
+          <div className="mx-auto max-w-5xl">
+            <FloatingPanel />
+          </div>
+        </section>
+
+        {/* ── SKILLS ── */}
+        <section id="skills" className="bg-black/30 px-6 py-24">
+          <div className="mx-auto max-w-5xl">
+            <motion.div
+              initial={{ opacity: 0, y: 22 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="mb-16"
+            >
+              <h2 className="mb-3 text-4xl font-bold md:text-5xl">Compétences</h2>
+              <p className="text-xl text-gray-400">Stack technique & outils</p>
+            </motion.div>
+
+            <motion.div
+              variants={stagger}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true }}
+              className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
+            >
+              {skillCategories.map((category) => (
+                <motion.div
+                  key={category.label}
+                  variants={fadeUp}
+                  whileHover={{ y: -8, scale: 1.02 }}
+                  className="glass rounded-3xl p-6"
+                >
+                  <div className="mb-5 flex items-center gap-3 text-white/80">
+                    {category.icon}
+                    <span className="text-sm font-semibold">{category.label}</span>
+                  </div>
+                  <div className="flex flex-col gap-2.5">
+                    {category.items.map((item) => (
+                      <div key={item} className="flex items-center gap-2 text-sm text-gray-400">
+                        <span className="h-1.5 w-1.5 rounded-full bg-white/30" />
+                        {item}
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ── PARCOURS ── */}
+        <section id="about" className="px-6 py-24">
+          <div className="mx-auto max-w-5xl">
+            <motion.h2
+              initial={{ opacity: 0, y: 22 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mb-16 text-4xl font-bold md:text-5xl"
+            >
+              Parcours
+            </motion.h2>
+
+            <div className="grid gap-16 md:grid-cols-2">
+              <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }}>
+                <h3 className="mb-8 text-2xl font-bold text-gray-200">Expérience</h3>
+                <div className="relative space-y-10 border-l border-white/10 pl-6">
+                  {experiences.map((exp, index) => (
+                    <motion.div key={exp.title} variants={fadeUp} className="relative">
+                      <motion.span
+                        className="absolute -left-[1.65rem] top-1.5 h-3 w-3 rounded-full border-2 border-white/40 bg-[#0a0a0a]"
+                        whileInView={{ scale: [0, 1.3, 1] }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.45, delay: index * 0.08 }}
+                      />
+                      <div className="mb-1 text-xs tracking-wide text-gray-500">{exp.period}</div>
+                      <h4 className="mb-1 text-lg font-bold">{exp.title}</h4>
+                      <div className="mb-2 text-sm text-blue-400/80">{exp.company}</div>
+                      <p className="text-sm leading-relaxed text-gray-500">{exp.description}</p>
+                    </motion.div>
                   ))}
                 </div>
               </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* ───────────── ABOUT / EXPERIENCE ───────────── */}
-      <section id="about" className="py-24 px-6">
-        <div className="max-w-5xl mx-auto">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-4xl md:text-5xl font-bold mb-16"
-          >
-            Parcours
-          </motion.h2>
-
-          <div className="grid md:grid-cols-2 gap-12">
-            {/* Experience */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-            >
-              <h3 className="text-2xl font-bold mb-8 text-gray-200">Expérience</h3>
-              <div className="relative border-l border-zinc-800 pl-6 space-y-10">
-                {experiences.map((exp, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: -10 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.1 * i }}
-                    className="relative"
-                  >
-                    <span className="absolute -left-[1.6rem] top-1 w-3 h-3 rounded-full bg-zinc-700 border-2 border-zinc-500" />
-                    <div className="text-xs text-gray-500 mb-1">{exp.period}</div>
-                    <h4 className="text-lg font-bold mb-1">{exp.title}</h4>
-                    <div className="text-sm text-gray-400 mb-2">{exp.company}</div>
-                    <p className="text-sm text-gray-500 leading-relaxed">{exp.description}</p>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Education + Languages */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.4 }}
-            >
-              <h3 className="text-2xl font-bold mb-8 text-gray-200">Formation</h3>
-              <div className="relative border-l border-zinc-800 pl-6 space-y-8 mb-14">
-                {educations.map((edu, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: -10 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.1 * i }}
-                    className="relative"
-                  >
-                    <span className="absolute -left-[1.6rem] top-1 w-3 h-3 rounded-full bg-zinc-700 border-2 border-zinc-500" />
-                    <div className="text-xs text-gray-500 mb-1">{edu.period}</div>
-                    <h4 className="text-lg font-bold mb-1">{edu.title}</h4>
-                    <div className="text-sm text-gray-400">{edu.school}</div>
-                  </motion.div>
-                ))}
-              </div>
-
-              <h3 className="text-2xl font-bold mb-6 text-gray-200">Langues</h3>
-              <div className="space-y-4">
-                {[
-                  { lang: "Russe", level: "Natif", pct: 100 },
-                  { lang: "Biélorusse", level: "Natif", pct: 100 },
-                  { lang: "Anglais", level: "Avancé", pct: 80 },
-                  { lang: "Français", level: "Intermédiaire", pct: 60 },
-                ].map(({ lang, level, pct }) => (
-                  <div key={lang}>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span>{lang}</span>
-                      <span className="text-gray-400">{level}</span>
-                    </div>
-                    <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-                      <motion.div
-                        className="h-full bg-white rounded-full"
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${pct}%` }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 1, delay: 0.3 }}
-                      />
-                    </div>
+              <div>
+                <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }} className="mb-12">
+                  <h3 className="mb-8 text-2xl font-bold text-gray-200">Formation</h3>
+                  <div className="relative space-y-8 border-l border-white/10 pl-6">
+                    {educations.map((edu, index) => (
+                      <motion.div key={edu.title} variants={fadeUp} className="relative">
+                        <motion.span
+                          className="absolute -left-[1.65rem] top-1.5 h-3 w-3 rounded-full border-2 border-white/40 bg-[#0a0a0a]"
+                          whileInView={{ scale: [0, 1.3, 1] }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.45, delay: index * 0.08 }}
+                        />
+                        <div className="mb-1 text-xs text-gray-500">{edu.period}</div>
+                        <h4 className="mb-1 text-lg font-bold">{edu.title}</h4>
+                        <div className="text-sm text-gray-400">{edu.school}</div>
+                      </motion.div>
+                    ))}
                   </div>
-                ))}
+                </motion.div>
+
+                <motion.div initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+                  <h3 className="mb-6 text-2xl font-bold text-gray-200">Langues</h3>
+                  <div className="space-y-4">
+                    {[
+                      { lang: "Russe", level: "Natif", pct: 100 },
+                      { lang: "Biélorusse", level: "Natif", pct: 100 },
+                      { lang: "Anglais", level: "Avancé", pct: 80 },
+                      { lang: "Français", level: "Intermédiaire", pct: 60 },
+                    ].map(({ lang, level, pct }) => (
+                      <div key={lang}>
+                        <div className="mb-1.5 flex justify-between text-sm">
+                          <span>{lang}</span>
+                          <span className="text-gray-400">{level}</span>
+                        </div>
+                        <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+                          <motion.div
+                            className="h-full rounded-full bg-gradient-to-r from-blue-400 to-white"
+                            initial={{ width: 0 }}
+                            whileInView={{ width: `${pct}%` }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 1, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── CONTACT ── */}
+        <section id="contact" className="bg-black/30 px-6 py-24">
+          <div className="mx-auto max-w-5xl">
+            <motion.div
+              initial={{ opacity: 0, y: 22 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="mb-16 text-center"
+            >
+              <h2 className="mb-6 text-4xl font-bold md:text-6xl">
+                Construisons quelque<br />
+                chose ensemble.
+              </h2>
+              <p className="mx-auto max-w-xl text-xl text-gray-400">
+                Je recherche une alternance en développement web à partir d&apos;octobre 2026.
+              </p>
+            </motion.div>
+
+            <motion.div
+              variants={stagger}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true }}
+              className="mb-16 grid gap-8 md:grid-cols-3"
+            >
+              {[
+                {
+                  icon: <Mail className="h-5 w-5" />,
+                  label: "Email",
+                  value: "rkhonyakov@gmail.com",
+                  href: "mailto:rkhonyakov@gmail.com",
+                },
+                {
+                  icon: <Phone className="h-5 w-5" />,
+                  label: "Téléphone",
+                  value: "07 63 24 37 44",
+                  href: "tel:+33763243744",
+                },
+                {
+                  icon: <MapPin className="h-5 w-5" />,
+                  label: "Localisation",
+                  value: "Rennes, France",
+                  href: null,
+                },
+              ].map((item) => (
+                <motion.div key={item.label} variants={fadeUp} className="text-center">
+                  <motion.div
+                    whileHover={{ scale: 1.1, rotate: 4 }}
+                    transition={{ type: "spring", stiffness: 260, damping: 14 }}
+                    className="glass mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full"
+                  >
+                    {item.icon}
+                  </motion.div>
+                  <h4 className="mb-2 font-bold">{item.label}</h4>
+                  {item.href ? (
+                    <a href={item.href} className="text-sm text-gray-400 transition-colors hover:text-white">
+                      {item.value}
+                    </a>
+                  ) : (
+                    <p className="text-sm text-gray-400">{item.value}</p>
+                  )}
+                </motion.div>
+              ))}
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="flex justify-center gap-8"
+            >
+              {[
+                { label: "LinkedIn", href: "https://linkedin.com/in/romankh", icon: <Linkedin size={16} /> },
+                { label: "GitHub", href: "https://github.com/romankh", icon: <Github size={16} /> },
+              ].map((social, index) => (
+                <motion.a
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ y: -4 }}
+                  className="flex items-center gap-2 text-sm text-gray-400 transition-colors hover:text-white"
+                >
+                  {social.icon} {social.label} ↗
+                </motion.a>
+              ))}
             </motion.div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ───────────── CONTACT ───────────── */}
-      <section id="contact" className="py-24 px-6 bg-[#050505]">
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-6xl font-bold mb-6">
-              Construisons quelque<br />
-              chose ensemble.
-            </h2>
-            <p className="text-xl text-gray-400 max-w-xl mx-auto">
-              Je recherche une alternance en développement web (BAC+3) à partir d'octobre 2026. N'hésitez pas à me contacter !
+        {/* ── FOOTER ── */}
+        <footer className="border-t border-white/8 px-6 py-8">
+          <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 text-sm text-gray-500 md:flex-row">
+            <p>© 2026 Raman Khaniakou. Tous droits réservés.</p>
+            <p className="flex items-center gap-2">
+              <Sparkles size={14} /> Développeur Web Full-Stack · Rennes, France
             </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-8 mb-16">
-            {[
-              { icon: <Mail className="w-6 h-6" />, label: "Email", value: "rkhonyakov@gmail.com", href: "mailto:rkhonyakov@gmail.com" },
-              { icon: <Phone className="w-6 h-6" />, label: "Téléphone", value: "07 63 24 37 44", href: "tel:+33763243744" },
-              { icon: <MapPin className="w-6 h-6" />, label: "Localisation", value: "Rennes, France", href: null },
-            ].map((item, idx) => (
-              <motion.div
-                key={item.label}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
-                className="text-center"
-              >
-                <div className="w-16 h-16 rounded-full bg-zinc-900 border border-zinc-700 flex items-center justify-center mx-auto mb-4">
-                  {item.icon}
-                </div>
-                <h4 className="font-bold mb-2">{item.label}</h4>
-                {item.href ? (
-                  <a href={item.href} className="text-gray-400 hover:text-white transition-colors">{item.value}</a>
-                ) : (
-                  <p className="text-gray-400">{item.value}</p>
-                )}
-              </motion.div>
-            ))}
           </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="flex justify-center gap-8"
-          >
-            {[
-              { label: "LinkedIn", href: "https://linkedin.com/in/romankh", icon: <Linkedin size={18} /> },
-              { label: "GitHub", href: "https://github.com/romankh", icon: <Github size={18} /> },
-            ].map((social, idx) => (
-              <motion.a
-                key={social.label}
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
-                whileHover={{ y: -5 }}
-                className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm"
-              >
-                {social.icon} {social.label} ↗
-              </motion.a>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ───────────── FOOTER ───────────── */}
-      <footer className="py-8 px-6 border-t border-zinc-800">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-gray-500 text-sm">
-          <p>© 2026 Raman Khaniakou. Tous droits réservés.</p>
-          <p>Développeur Web Full-Stack · Rennes, France</p>
-        </div>
-      </footer>
-    </main>
+        </footer>
+      </main>
+    </>
   );
 }
