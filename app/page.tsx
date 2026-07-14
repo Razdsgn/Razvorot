@@ -33,11 +33,16 @@ function CustomCursor() {
   const ringY = useSpring(dotY, { stiffness: 140, damping: 20 });
 
   useEffect(() => {
+    let raf = 0;
     const move = (e: MouseEvent) => {
-      dotX.set(e.clientX);
-      dotY.set(e.clientY);
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        dotX.set(e.clientX);
+        dotY.set(e.clientY);
+        raf = 0;
+      });
     };
-    window.addEventListener("mousemove", move);
+    window.addEventListener("mousemove", move, { passive: true });
     return () => window.removeEventListener("mousemove", move);
   }, [dotX, dotY]);
 
