@@ -1,3 +1,4 @@
+/* app/globals.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,38 +14,36 @@
   * {
     @apply border-border;
   }
-  
+
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    cursor: none;
   }
 
-  /* Custom scrollbar */
+  html {
+    scroll-behavior: auto;
+  }
+
   ::-webkit-scrollbar {
-    width: 10px;
+    width: 6px;
   }
 
   ::-webkit-scrollbar-track {
-    background: #1a1a1a;
+    background: transparent;
   }
 
   ::-webkit-scrollbar-thumb {
     background: #333;
-    border-radius: 5px;
+    border-radius: 6px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #444;
+    background: #555;
   }
 
-  /* Smooth scroll behavior */
-  html {
-    scroll-behavior: smooth;
-  }
-
-  /* Selection styling */
   ::selection {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.15);
     color: white;
   }
 }
@@ -58,39 +57,12 @@
     @apply bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-500;
   }
 
-  .animate-in {
-    animation: animateIn 0.6s ease-out forwards;
-  }
-
-  @keyframes animateIn {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* Magnetic effect */
-  .magnetic {
-    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-  }
-
-  /* Smooth transitions */
-  .transition-smooth {
-    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-  }
-
-  /* Glass morphism effect */
   .glass {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
-  /* Gradient border */
   .gradient-border {
     position: relative;
   }
@@ -108,92 +80,101 @@
   }
 }
 
-/* Custom animations */
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* ───────────────────────── Custom cursor ───────────────────────── */
+.cursor-dot {
+  pointer-events: none;
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  transition: transform 0.1s ease;
+  mix-blend-mode: difference;
 }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.cursor-ring {
+  pointer-events: none;
+  position: fixed;
+  width: 40px;
+  height: 40px;
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9998;
+  transition: width 0.3s ease, height 0.3s ease, border-color 0.3s ease;
+  mix-blend-mode: difference;
 }
 
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+body:has(a:hover) .cursor-ring,
+body:has(button:hover) .cursor-ring {
+  width: 60px;
+  height: 60px;
+  border-color: rgba(255, 255, 255, 0.8);
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+/* ───────────────────────── Background blobs ───────────────────────── */
+@keyframes blob1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(60px, -40px) scale(1.1); }
+  66% { transform: translate(-30px, 50px) scale(0.95); }
 }
 
-/* Responsive text sizes */
-@layer components {
-  .text-hero {
-    font-size: clamp(3rem, 8vw, 8rem);
-    line-height: 1;
-    font-weight: 700;
-  }
-
-  .text-section-title {
-    font-size: clamp(2rem, 5vw, 4rem);
-    line-height: 1.1;
-    font-weight: 700;
-  }
-
-  .text-card-title {
-    font-size: clamp(1.5rem, 3vw, 2rem);
-    line-height: 1.2;
-    font-weight: 600;
-  }
+@keyframes blob2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-50px, 30px) scale(1.08); }
+  66% { transform: translate(40px, -60px) scale(0.92); }
 }
 
-/* Loading animations */
+@keyframes blob3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30px, 40px) scale(1.05); }
+}
+
+.blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: 0.12;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  pointer-events: none;
+}
+
+.blob-1 { animation: blob1 14s infinite; }
+.blob-2 { animation: blob2 18s infinite; }
+.blob-3 { animation: blob3 22s infinite; }
+
+/* ───────────────────────── Floating particles ───────────────────────── */
+@keyframes float-up {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 0.4; }
+  100% { transform: translateY(-120vh) translateX(40px); opacity: 0; }
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+  animation: float-up linear infinite;
+}
+
+/* ───────────────────────── Skeleton loader (optional) ───────────────────────── */
 @keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
-  }
-  100% {
-    background-position: 1000px 0;
-  }
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
 }
 
 .skeleton {
   animation: shimmer 2s infinite;
-  background: linear-gradient(
-    to right,
-    #1a1a1a 4%,
-    #2a2a2a 25%,
-    #1a1a1a 36%
-  );
+  background: linear-gradient(to right, #1a1a1a 4%, #2a2a2a 25%, #1a1a1a 36%);
   background-size: 1000px 100%;
 }
 
-/* Hover effects */
+/* ───────────────────────── Misc ───────────────────────── */
 .hover-lift {
   transition: transform 0.3s ease;
 }
@@ -202,13 +183,24 @@
   transform: translateY(-5px);
 }
 
-/* Focus styles */
 :focus-visible {
   outline: 2px solid white;
   outline-offset: 4px;
 }
 
-/* Reduced motion support */
+/* Disable custom cursor on touch devices */
+@media (max-width: 768px), (hover: none) {
+  body {
+    cursor: auto;
+  }
+
+  .cursor-dot,
+  .cursor-ring {
+    display: none;
+  }
+}
+
+/* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -216,6 +208,5 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
   }
 }
