@@ -38,10 +38,6 @@
     border-radius: 6px;
   }
 
-  ::-webkit-scrollbar-thumb:hover {
-    background: #555;
-  }
-
   ::selection {
     background-color: rgba(255, 255, 255, 0.15);
     color: white;
@@ -53,30 +49,10 @@
     text-wrap: balance;
   }
 
-  .gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-500;
-  }
-
+  /* No backdrop-filter — solid translucent bg instead. Removes scroll repaint cost. */
   .glass {
-    background: rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.08);
-  }
-
-  .gradient-border {
-    position: relative;
-  }
-
-  .gradient-border::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    padding: 1px;
-    background: linear-gradient(45deg, #fff, transparent);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    border-radius: inherit;
   }
 }
 
@@ -90,7 +66,7 @@
   border-radius: 50%;
   transform: translate(-50%, -50%);
   z-index: 9999;
-  transition: transform 0.1s ease;
+  will-change: transform;
   mix-blend-mode: difference;
 }
 
@@ -103,6 +79,7 @@
   border-radius: 50%;
   transform: translate(-50%, -50%);
   z-index: 9998;
+  will-change: transform;
   transition: width 0.3s ease, height 0.3s ease, border-color 0.3s ease;
   mix-blend-mode: difference;
 }
@@ -114,29 +91,33 @@ body:has(button:hover) .cursor-ring {
   border-color: rgba(255, 255, 255, 0.8);
 }
 
-/* ───────────────────────── Background blobs ───────────────────────── */
+/* ───────────────────────── Background blobs ─────────────────────────
+   Blur radius reduced (90px → 40px) and forced onto GPU layer.
+   These no longer repaint on scroll since they're not tied to scroll progress. */
 @keyframes blob1 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(60px, -40px) scale(1.1); }
-  66% { transform: translate(-30px, 50px) scale(0.95); }
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  33% { transform: translate3d(60px, -40px, 0) scale(1.1); }
+  66% { transform: translate3d(-30px, 50px, 0) scale(0.95); }
 }
 
 @keyframes blob2 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(-50px, 30px) scale(1.08); }
-  66% { transform: translate(40px, -60px) scale(0.92); }
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  33% { transform: translate3d(-50px, 30px, 0) scale(1.08); }
+  66% { transform: translate3d(40px, -60px, 0) scale(0.92); }
 }
 
 @keyframes blob3 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(30px, 40px) scale(1.05); }
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(30px, 40px, 0) scale(1.05); }
 }
 
 .blob {
   position: absolute;
   border-radius: 9999px;
-  filter: blur(90px);
-  opacity: 0.12;
+  filter: blur(40px);
+  opacity: 0.1;
+  will-change: transform;
+  transform: translateZ(0);
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
   pointer-events: none;
@@ -148,10 +129,10 @@ body:has(button:hover) .cursor-ring {
 
 /* ───────────────────────── Floating particles ───────────────────────── */
 @keyframes float-up {
-  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  0% { transform: translate3d(0, 0, 0); opacity: 0; }
   10% { opacity: 1; }
   90% { opacity: 0.4; }
-  100% { transform: translateY(-120vh) translateX(40px); opacity: 0; }
+  100% { transform: translate3d(40px, -120vh, 0); opacity: 0; }
 }
 
 .particle {
@@ -159,19 +140,8 @@ body:has(button:hover) .cursor-ring {
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.5);
   pointer-events: none;
+  will-change: transform;
   animation: float-up linear infinite;
-}
-
-/* ───────────────────────── Skeleton loader (optional) ───────────────────────── */
-@keyframes shimmer {
-  0% { background-position: -1000px 0; }
-  100% { background-position: 1000px 0; }
-}
-
-.skeleton {
-  animation: shimmer 2s infinite;
-  background: linear-gradient(to right, #1a1a1a 4%, #2a2a2a 25%, #1a1a1a 36%);
-  background-size: 1000px 100%;
 }
 
 /* ───────────────────────── Misc ───────────────────────── */
@@ -188,7 +158,6 @@ body:has(button:hover) .cursor-ring {
   outline-offset: 4px;
 }
 
-/* Disable custom cursor on touch devices */
 @media (max-width: 768px), (hover: none) {
   body {
     cursor: auto;
@@ -198,9 +167,14 @@ body:has(button:hover) .cursor-ring {
   .cursor-ring {
     display: none;
   }
+
+  /* Kill blobs/particles entirely on mobile — biggest perf win */
+  .blob,
+  .particle {
+    display: none;
+  }
 }
 
-/* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
