@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/navbar";
 import LenisProvider from "@/components/lenis-provider";
+import CustomCursor from "@/components/CustomCursor";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -69,6 +70,7 @@ export default function RootLayout({
         <LenisProvider>
           <Navbar />
           {children}
+        <CustomCursor />  
         </LenisProvider>
       </body>
     </html>
