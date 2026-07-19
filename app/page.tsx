@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, memo, useCallback } from "react";
 import {
   motion,
   useScroll,
@@ -23,17 +23,17 @@ import {
   Sparkles,
 } from "lucide-react";
 
-/* ───────────────────────── Static background blobs (no animation) ───────────────────────── */
+/* ── Фоновые блобы (статичные) ── */
 function BackgroundBlobs() {
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none z-0" aria-hidden>
-      <div className="blob w-[480px] h-[480px] bg-blue-600 top-[-140px] left-[-140px]" />
-      <div className="blob w-[400px] h-[400px] bg-purple-700 bottom-[4%] right-[-120px]" />
+      <div className="blob blob-1" />
+      <div className="blob blob-2" />
     </div>
   );
 }
 
-/* ───────────────────────── Rotating text (lightweight) ───────────────────────── */
+/* ── Вращающийся текст (без AnimatePresence) ── */
 function RotatingText({ items }: { items: string[] }) {
   const [index, setIndex] = useState(0);
 
@@ -46,23 +46,21 @@ function RotatingText({ items }: { items: string[] }) {
 
   return (
     <div className="relative h-[1.3em] overflow-hidden">
-      <AnimatePresence mode="wait">
-        <motion.span
-          key={index}
-          initial={{ y: 16, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: -16, opacity: 0 }}
-          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-          className="absolute inset-0"
-        >
-          {items[index]}
-        </motion.span>
-      </AnimatePresence>
+      <motion.span
+        key={index}
+        initial={{ y: 16, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: -16, opacity: 0 }}
+        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+        className="absolute inset-0"
+      >
+        {items[index]}
+      </motion.span>
     </div>
   );
 }
 
-/* ───────────────────────── Simple button (no magnetic tracking) ───────────────────────── */
+/* ── Кнопка CTA (без магнитного эффекта) ── */
 function CTAButton({
   children,
   href,
@@ -86,7 +84,7 @@ function CTAButton({
   );
 }
 
-/* ───────────────────────── Animated stat counter ───────────────────────── */
+/* ── Анимированная статистика (оптимизированный интервал) ── */
 function AnimatedStat({ end, label, suffix = "" }: { end: number; label: string; suffix?: string }) {
   const [count, setCount] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
@@ -107,7 +105,7 @@ function AnimatedStat({ end, label, suffix = "" }: { end: number; label: string;
     if (!seen) return;
     let start = 0;
     const duration = 1200;
-    const increment = end / (duration / 16);
+    const increment = end / (duration / 24);
     const timer = setInterval(() => {
       start += increment;
       if (start >= end) {
@@ -116,7 +114,7 @@ function AnimatedStat({ end, label, suffix = "" }: { end: number; label: string;
       } else {
         setCount(Math.floor(start));
       }
-    }, 16);
+    }, 24);
     return () => clearInterval(timer);
   }, [seen, end]);
 
@@ -131,7 +129,7 @@ function AnimatedStat({ end, label, suffix = "" }: { end: number; label: string;
   );
 }
 
-/* ───────────────────────── Data ───────────────────────── */
+/* ── Данные ── */
 const skillCategories = [
   {
     icon: <Server size={18} />,
@@ -237,22 +235,8 @@ const educations = [
   },
 ];
 
-const stagger = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.08 } },
-};
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] },
-  },
-};
-
-/* ───────────────────────── Project card (lightweight) ───────────────────────── */
-function ProjectCard({ project, index }: { project: (typeof projects)[0]; index: number }) {
+/* ── Компонент карточки проекта (мемоизирован) ── */
+const ProjectCard = memo(function ProjectCard({ project, index }: { project: (typeof projects)[0]; index: number }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 40 }}
@@ -260,7 +244,6 @@ function ProjectCard({ project, index }: { project: (typeof projects)[0]; index:
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.5, delay: index * 0.06 }}
       className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br p-8 md:p-10"
-      style={{ backgroundImage: undefined }}
     >
       <div className={`absolute inset-0 bg-gradient-to-br ${project.gradient} opacity-100`} />
       <div className="absolute right-6 top-4 select-none text-7xl font-black text-white/5 md:text-8xl">
@@ -296,9 +279,9 @@ function ProjectCard({ project, index }: { project: (typeof projects)[0]; index:
       </div>
     </motion.div>
   );
-}
+});
 
-/* ───────────────────────── Currently building panel ───────────────────────── */
+/* ── Floating Panel ── */
 function FloatingPanel() {
   return (
     <motion.div
@@ -339,7 +322,7 @@ function FloatingPanel() {
   );
 }
 
-/* ───────────────────────── MAIN PAGE ───────────────────────── */
+/* ── ГЛАВНАЯ СТРАНИЦА ── */
 export default function Home() {
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress: heroProgress } = useScroll({
@@ -478,15 +461,16 @@ export default function Home() {
               <p className="text-xl text-gray-400">Stack technique & outils</p>
             </motion.div>
 
-            <motion.div
-              variants={stagger}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true }}
-              className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
-            >
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {skillCategories.map((category) => (
-                <motion.div key={category.label} variants={fadeUp} className="glass rounded-3xl p-6">
+                <motion.div
+                  key={category.label}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4 }}
+                  className="glass rounded-3xl p-6"
+                >
                   <div className="mb-5 flex items-center gap-3 text-white/80">
                     {category.icon}
                     <span className="text-sm font-semibold">{category.label}</span>
@@ -501,7 +485,7 @@ export default function Home() {
                   </div>
                 </motion.div>
               ))}
-            </motion.div>
+            </div>
           </div>
         </section>
 
@@ -518,11 +502,18 @@ export default function Home() {
             </motion.h2>
 
             <div className="grid gap-16 md:grid-cols-2">
-              <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }}>
+              <div>
                 <h3 className="mb-8 text-2xl font-bold text-gray-200">Expérience</h3>
                 <div className="relative space-y-10 border-l border-white/10 pl-6">
-                  {experiences.map((exp) => (
-                    <motion.div key={exp.title} variants={fadeUp} className="relative">
+                  {experiences.map((exp, idx) => (
+                    <motion.div
+                      key={exp.title}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: idx * 0.05 }}
+                      className="relative"
+                    >
                       <span className="absolute -left-[1.65rem] top-1.5 h-3 w-3 rounded-full border-2 border-white/40 bg-[#0a0a0a]" />
                       <div className="mb-1 text-xs tracking-wide text-gray-500">{exp.period}</div>
                       <h4 className="mb-1 text-lg font-bold">{exp.title}</h4>
@@ -531,14 +522,21 @@ export default function Home() {
                     </motion.div>
                   ))}
                 </div>
-              </motion.div>
+              </div>
 
               <div>
-                <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }} className="mb-12">
+                <div className="mb-12">
                   <h3 className="mb-8 text-2xl font-bold text-gray-200">Formation</h3>
                   <div className="relative space-y-8 border-l border-white/10 pl-6">
-                    {educations.map((edu) => (
-                      <motion.div key={edu.title} variants={fadeUp} className="relative">
+                    {educations.map((edu, idx) => (
+                      <motion.div
+                        key={edu.title}
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.4, delay: idx * 0.05 }}
+                        className="relative"
+                      >
                         <span className="absolute -left-[1.65rem] top-1.5 h-3 w-3 rounded-full border-2 border-white/40 bg-[#0a0a0a]" />
                         <div className="mb-1 text-xs text-gray-500">{edu.period}</div>
                         <h4 className="mb-1 text-lg font-bold">{edu.title}</h4>
@@ -546,9 +544,13 @@ export default function Home() {
                       </motion.div>
                     ))}
                   </div>
-                </motion.div>
+                </div>
 
-                <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                >
                   <h3 className="mb-6 text-2xl font-bold text-gray-200">Langues</h3>
                   <div className="space-y-4">
                     {[
@@ -599,13 +601,7 @@ export default function Home() {
               </p>
             </motion.div>
 
-            <motion.div
-              variants={stagger}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true }}
-              className="mb-16 grid gap-8 md:grid-cols-3"
-            >
+            <div className="mb-16 grid gap-8 md:grid-cols-3">
               {[
                 {
                   icon: <Mail className="h-5 w-5" />,
@@ -626,7 +622,14 @@ export default function Home() {
                   href: null,
                 },
               ].map((item) => (
-                <motion.div key={item.label} variants={fadeUp} className="text-center">
+                <motion.div
+                  key={item.label}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4 }}
+                  className="text-center"
+                >
                   <div className="glass mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full">
                     {item.icon}
                   </div>
@@ -640,7 +643,7 @@ export default function Home() {
                   )}
                 </motion.div>
               ))}
-            </motion.div>
+            </div>
 
             <motion.div
               initial={{ opacity: 0, y: 12 }}
