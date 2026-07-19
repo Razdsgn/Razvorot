@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
-export default function Navbar() {
+const Navbar = memo(function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -51,7 +51,6 @@ export default function Navbar() {
         }`}
       >
         <div className="max-w-[1400px] mx-auto px-6 lg:px-12 py-5 flex items-center justify-between">
-          {/* Logo - Simple Text */}
           <Link
             href="/"
             className="text-base font-bold tracking-wide hover:opacity-70 transition-opacity duration-300"
@@ -59,7 +58,6 @@ export default function Navbar() {
             YOUR NAME
           </Link>
 
-          {/* Desktop Navigation - Center */}
           <ul className="hidden lg:flex items-center gap-10">
             {navItems.map((item) => (
               <li key={item.href}>
@@ -73,7 +71,6 @@ export default function Navbar() {
             ))}
           </ul>
 
-          {/* Email Link - Right Side Desktop */}
           <a
             href="mailto:your@email.com"
             className="hidden lg:block text-[13px] text-white/70 hover:text-white transition-colors duration-300 font-light tracking-wide"
@@ -81,7 +78,6 @@ export default function Navbar() {
             Get in Touch
           </a>
 
-          {/* Mobile Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="lg:hidden relative w-6 h-6 flex flex-col justify-center items-center group"
@@ -101,7 +97,6 @@ export default function Navbar() {
         </div>
       </motion.nav>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -111,7 +106,6 @@ export default function Navbar() {
             transition={{ duration: 0.3 }}
             className="fixed inset-0 z-40 lg:hidden"
           >
-            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -120,7 +114,6 @@ export default function Navbar() {
               className="absolute inset-0 bg-black/95 backdrop-blur-xl"
             />
 
-            {/* Menu Content */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -148,7 +141,6 @@ export default function Navbar() {
                   ))}
                 </ul>
 
-                {/* Email Link Mobile */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -170,4 +162,6 @@ export default function Navbar() {
       </AnimatePresence>
     </>
   );
-}
+});
+
+export default Navbar;
