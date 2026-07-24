@@ -59,7 +59,7 @@ export default function CustomCursor() {
           transform: 'translate(-50%, -50%)',
           width: isHovering ? 60 : 40,
           height: isHovering ? 60 : 40,
-          borderColor: isHovering ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.5)',
+          borderColor: isHovering ? 'rgba(212,255,61,0.85)' : 'rgba(237,234,224,0.4)',
         }}
       />
     </>
