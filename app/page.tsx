@@ -1,3 +1,5 @@
+"use client";
+
 // app/page.tsx
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
