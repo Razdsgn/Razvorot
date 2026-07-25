@@ -36,7 +36,6 @@ export default function CustomCursor() {
     };
   }, []);
 
-  // Скрываем на мобильных устройствах
   if (typeof window !== 'undefined' && 'ontouchstart' in window) {
     return null;
   }
@@ -52,14 +51,11 @@ export default function CustomCursor() {
         }}
       />
       <div
-        className="cursor-ring"
+        className={`cursor-ring ${isHovering ? "hover" : ""}`}
         style={{
           left: position.x,
           top: position.y,
           transform: 'translate(-50%, -50%)',
-          width: isHovering ? 60 : 40,
-          height: isHovering ? 60 : 40,
-          borderColor: isHovering ? 'rgba(212,255,61,0.85)' : 'rgba(237,234,224,0.4)',
         }}
       />
     </>
