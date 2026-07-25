@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/navbar";
 import LenisProvider from "@/components/lenis-provider";
 import CustomCursor from "@/components/CustomCursor";
+import Particles from "@/components/Particles";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -86,6 +87,7 @@ export default function RootLayout({
           <Navbar />
           {children}
           <CustomCursor />
+          <Particles />
         </LenisProvider>
       </body>
     </html>
