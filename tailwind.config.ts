@@ -9,42 +9,30 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Регистр "код" — холодный почти-чёрный
         ink: {
-          DEFAULT: "#0D0D0D",
-          soft: "#17170F",
-          line: "rgba(212, 255, 61, 0.08)",
+          DEFAULT: "#131310",
+          soft: "#1B1B16",
+          line: "rgba(233, 228, 216, 0.09)",
         },
-        // Регистр "дизайн" — тёплый почти-чёрный (та же темнота, другая температура —
-        // регистры больше не различаются цветом фона, только оттенком черного)
-        canvas: {
-          DEFAULT: "#1A170F",
-          soft: "#211D12",
-        },
-        // Текст на тёмном фоне (раньше "бумага" была фоном — теперь это просто
-        // светлый текст, панели больше не светлые)
         paper: {
-          DEFAULT: "#EDEAE0",
-          soft: "#D8D4C4",
-          line: "rgba(237, 234, 224, 0.1)",
+          DEFAULT: "#E9E4D8",
+          soft: "#F2EEE4",
+          line: "rgba(19, 19, 16, 0.1)",
         },
-        graphite: "#C9C6B8", // вторичный светлый текст (на canvas-панелях)
-        mist: "#8B9182", // приглушённый текст (комментарии/подписи)
-        // Единственный акцент — кислотно-жёлтый. clay/cobalt указывают на один и тот
-        // же цвет (яркий/приглушённый оттенок), чтобы не трогать разметку компонентов —
-        // но по сути это один акцент, а не два.
+        graphite: "#55534A",
+        mist: "#9CA39A",
         clay: {
-          DEFAULT: "#D4FF3D",
-          soft: "#AEBD5A",
+          DEFAULT: "#9C6B3F",
+          soft: "#C79A6C",
         },
         cobalt: {
-          DEFAULT: "#D4FF3D",
-          soft: "#AEBD5A",
+          DEFAULT: "#3D5AFE",
+          soft: "#7C90FF",
         },
-        background: "#0D0D0D",
-        foreground: "#EDEAE0",
-        muted: "#8B9182",
-        border: "rgba(212, 255, 61, 0.08)",
+        background: "#131310",
+        foreground: "#E9E4D8",
+        muted: "#9CA39A",
+        border: "rgba(233, 228, 216, 0.1)",
       },
       fontFamily: {
         display: ["var(--font-fraunces)", "Georgia", "serif"],
@@ -58,6 +46,7 @@ const config: Config = {
         "scale-in": "scaleIn 0.6s ease-out",
         shimmer: "shimmer 2s infinite",
         caret: "caret 1.1s step-end infinite",
+        gradient: "gradientShift 8s ease infinite",
       },
       keyframes: {
         fadeIn: {
@@ -84,6 +73,11 @@ const config: Config = {
           "0%, 45%": { opacity: "1" },
           "50%, 95%": { opacity: "0" },
           "100%": { opacity: "1" },
+        },
+        gradientShift: {
+          "0%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+          "100%": { backgroundPosition: "0% 50%" },
         },
       },
       backdropBlur: {
