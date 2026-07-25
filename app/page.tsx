@@ -1,10 +1,11 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect, memo } from "react";
 import {
   motion,
   useScroll,
   useTransform,
+  AnimatePresence,
 } from "framer-motion";
 import {
   ChevronRight,
@@ -23,17 +24,18 @@ import {
   PenTool,
   GitCommit,
 } from "lucide-react";
-import { useState, useEffect, memo } from "react";
-import { AnimatePresence } from "framer-motion";
+import Particles from "@/components/Particles"; // не забываем импорт
 
 /* ═══════════════════════════════════════════════════════════════
-   AMBIENT — fine dot-grid instead of generic gradient blobs.
-   Nod to a design-tool canvas background, used site-wide (quiet).
+   AMBIENT — fine dot-grid with parallax
    ═══════════════════════════════════════════════════════════════ */
 function AmbientGrid() {
+  const { scrollYProgress } = useScroll();
+  const y = useTransform(scrollYProgress, [0, 1], [0, -120]);
   return (
-    <div
-      className="fixed inset-0 z-0 pointer-events-none dot-grid opacity-40"
+    <motion.div
+      className="fixed inset-0 z-0 pointer-events-none dot-grid opacity-30"
+      style={{ y }}
       aria-hidden
     />
   );
@@ -185,8 +187,6 @@ const skillCategories = [
   },
 ];
 
-// Colonne "papier" (design & direction) vs colonne "ink" (engineering) —
-// partition faite par label, pas par duplication de données.
 const designSkillCategory = skillCategories.find((c) => c.label === "Design & UX")!;
 const engineeringSkillCategories = skillCategories.filter((c) => c.label !== "Design & UX");
 
@@ -223,9 +223,6 @@ const projects = [
   },
 ];
 
-// `track` pilote l'icône/couleur du nœud de la timeline : design (clay, PenTool)
-// ou engineering (cobalt, GitCommit). Lu chronologiquement (le plus récent en haut),
-// la timeline visualise littéralement le virage design → développement.
 const experiences: {
   period: string;
   title: string;
@@ -287,8 +284,33 @@ const educations = [
 
 /* ── Carte de projet, présentée comme un onglet d'éditeur de code ── */
 const ProjectCard = memo(function ProjectCard({ project, index }: { project: (typeof projects)[0]; index: number }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [rotate, setRotate] = useState({ x: 0, y: 0 });
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const rect = cardRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = ((y - centerY) / centerY) * -8;
+    const rotateY = ((x - centerX) / centerX) * 8;
+    setRotate({ x: rotateX, y: rotateY });
+  };
+
+  const handleMouseLeave = () => setRotate({ x: 0, y: 0 });
+
   return (
     <motion.div
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        perspective: "800px",
+        transform: `rotateX(${rotate.x}deg) rotateY(${rotate.y}deg)`,
+        transition: "transform 0.1s ease-out",
+      }}
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
@@ -393,8 +415,19 @@ export default function Home() {
     offset: ["start start", "end end"],
   });
 
-  // Le panneau "papier" (design) s'efface pendant que le panneau
-  // "ink" (code) apparaît — la transformation littérale designer → développeur.
+  // Динамическое свечение (радиальный градиент за курсором)
+  const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 });
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      setMousePos({
+        x: e.clientX / window.innerWidth,
+        y: e.clientY / window.innerHeight,
+      });
+    };
+    window.addEventListener("mousemove", onMove);
+    return () => window.removeEventListener("mousemove", onMove);
+  }, []);
+
   const paperOpacity = useTransform(heroProgress, [0, 0.55], [1, 0]);
   const paperY = useTransform(heroProgress, [0, 0.55], [0, -50]);
   const inkOpacity = useTransform(heroProgress, [0.3, 1], [0, 1]);
@@ -414,6 +447,14 @@ export default function Home() {
     <>
       <AmbientGrid />
 
+      {/* Свечение за курсором */}
+      <div
+        className="fixed inset-0 z-0 pointer-events-none"
+        style={{
+          background: `radial-gradient(circle at ${mousePos.x * 100}% ${mousePos.y * 100}%, rgba(61,90,254,0.08), transparent 70%)`,
+        }}
+      />
+
       <main className="relative z-10 min-h-screen overflow-x-hidden bg-ink text-paper">
         {/* ── HERO — panneau bureau de création → éditeur de code ── */}
         <section ref={heroRef} className="relative h-[155vh]">
@@ -421,7 +462,7 @@ export default function Home() {
             {/* Panneau "papier" — Coordination & Design */}
             <motion.div
               style={{ opacity: paperOpacity, y: paperY }}
-              className="absolute inset-0 flex items-center justify-center bg-canvas px-6 text-graphite"
+              className="absolute inset-0 flex items-center justify-center bg-paper px-6 text-graphite"
             >
               <span className="crop-mark tl" />
               <span className="crop-mark tr" />
@@ -440,10 +481,10 @@ export default function Home() {
                 </h1>
                 <div className="flex items-center justify-center gap-4" aria-hidden>
                   {[
-                    { name: "ink", cls: "bg-ink border border-graphite/30" },
-                    { name: "canvas", cls: "bg-canvas border border-graphite/30" },
-                    { name: "volt", cls: "bg-clay" },
-                    { name: "paper", cls: "bg-paper-soft border border-ink/50" },
+                    { name: "clay", cls: "bg-clay" },
+                    { name: "graphite", cls: "bg-graphite" },
+                    { name: "cobalt", cls: "bg-cobalt" },
+                    { name: "paper", cls: "bg-paper-soft border border-graphite/30" },
                   ].map((swatch) => (
                     <div key={swatch.name} className="flex flex-col items-center gap-2">
                       <div className={`h-8 w-8 rounded-sm ${swatch.cls}`} />
@@ -531,7 +572,9 @@ export default function Home() {
               className="mb-16"
             >
               <SectionEyebrow index="02" label="Réalisations" />
-              <h2 className="font-display text-4xl italic md:text-5xl">Projets</h2>
+              <h2 className="font-display text-4xl italic md:text-5xl gradient-text">
+                Projets
+              </h2>
             </motion.div>
 
             <div className="flex flex-col gap-8">
@@ -560,7 +603,9 @@ export default function Home() {
               className="mb-16"
             >
               <SectionEyebrow index="03" label="Stack & direction" />
-              <h2 className="font-display text-4xl italic md:text-5xl">Compétences</h2>
+              <h2 className="font-display text-4xl italic md:text-5xl gradient-text">
+                Compétences
+              </h2>
             </motion.div>
 
             <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.7fr)]">
@@ -570,7 +615,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4 }}
-                className="rounded-lg bg-canvas p-7 text-graphite"
+                className="rounded-lg bg-paper p-7 text-graphite"
               >
                 <div className="mb-6 flex items-center gap-3">
                   <PenTool size={18} className="text-clay" />
@@ -634,7 +679,9 @@ export default function Home() {
               className="mb-16"
             >
               <SectionEyebrow index="01" label="De la coordination au code" />
-              <h2 className="font-display text-4xl italic md:text-5xl">Parcours</h2>
+              <h2 className="font-display text-4xl italic md:text-5xl gradient-text">
+                Parcours
+              </h2>
             </motion.div>
 
             <div className="grid gap-16 md:grid-cols-2">
@@ -712,8 +759,6 @@ export default function Home() {
                           <span className="text-mist">{level}</span>
                         </div>
                         <div className="h-1.5 overflow-hidden rounded-full bg-ink-line">
-                          {/* Le dégradé va de l'accent design (clay) à l'accent code (cobalt) —
-                              même logique que la timeline, appliquée à une jauge. */}
                           <motion.div
                             className="h-full rounded-full bg-gradient-to-r from-clay to-cobalt-soft"
                             initial={{ width: 0 }}
@@ -742,7 +787,7 @@ export default function Home() {
               className="mb-16 text-center"
             >
               <SectionEyebrow index="04" label="Prochaine étape" />
-              <h2 className="mb-6 font-display text-4xl italic leading-tight md:text-6xl">
+              <h2 className="mb-6 font-display text-4xl italic leading-tight md:text-6xl gradient-text">
                 Construisons quelque
                 <br />
                 chose ensemble.
