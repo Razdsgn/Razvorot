@@ -24,7 +24,6 @@ import {
   PenTool,
   GitCommit,
 } from "lucide-react";
-import Particles from "@/components/Particles"; // не забываем импорт
 
 /* ═══════════════════════════════════════════════════════════════
    AMBIENT — fine dot-grid with parallax
@@ -285,7 +284,15 @@ const educations = [
 /* ── Carte de projet, présentée comme un onglet d'éditeur de code ── */
 const ProjectCard = memo(function ProjectCard({ project, index }: { project: (typeof projects)[0]; index: number }) {
   const cardRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [rotate, setRotate] = useState({ x: 0, y: 0 });
+
+  // Parallax при скролле
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"],
+  });
+  const y = useTransform(scrollYProgress, [0, 1], [0, -50 * (index + 1)]);
 
   const handleMouseMove = (e: React.MouseEvent) => {
     const rect = cardRef.current?.getBoundingClientRect();
@@ -303,62 +310,71 @@ const ProjectCard = memo(function ProjectCard({ project, index }: { project: (ty
 
   return (
     <motion.div
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{
-        perspective: "800px",
-        transform: `rotateX(${rotate.x}deg) rotateY(${rotate.y}deg)`,
-        transition: "transform 0.1s ease-out",
-      }}
+      ref={containerRef}
+      style={{ y }}
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.5, delay: index * 0.06 }}
-      className="relative overflow-hidden rounded-lg border border-ink-line bg-ink-soft"
+      className="relative"
     >
-      {/* Barre d'onglet façon éditeur */}
-      <div className="flex items-center gap-2 border-b border-ink-line px-5 py-3">
-        <div className="editor-dots flex gap-1.5" aria-hidden>
-          <span className="bg-clay/70" />
-          <span className="bg-cobalt/70" />
-          <span className="bg-mist/40" />
+      {/* Внутренний блок с 3D-наклоном */}
+      <div
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          perspective: "800px",
+          transform: `rotateX(${rotate.x}deg) rotateY(${rotate.y}deg)`,
+          transition: "transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1)",
+          willChange: "transform",
+          transformStyle: "preserve-3d",
+        }}
+        className="overflow-hidden rounded-lg border border-ink-line bg-ink-soft"
+      >
+        {/* Barre d'onglet façon éditeur */}
+        <div className="flex items-center gap-2 border-b border-ink-line px-5 py-3">
+          <div className="editor-dots flex gap-1.5" aria-hidden>
+            <span className="bg-clay/70" />
+            <span className="bg-cobalt/70" />
+            <span className="bg-mist/40" />
+          </div>
+          <span className="ml-3 font-mono text-xs text-mist">{project.filename}</span>
         </div>
-        <span className="ml-3 font-mono text-xs text-mist">{project.filename}</span>
-      </div>
 
-      <div className="relative p-8 md:p-10">
-        <div className="absolute right-6 top-2 select-none font-mono text-7xl font-black text-paper/5 md:text-8xl">
-          {project.number}
-        </div>
+        <div className="relative p-8 md:p-10">
+          <div className="absolute right-6 top-2 select-none font-mono text-7xl font-black text-paper/5 md:text-8xl">
+            {project.number}
+          </div>
 
-        <div className="relative flex flex-col gap-6 md:flex-row md:items-start">
-          <div className="text-5xl">{project.icon}</div>
+          <div className="relative flex flex-col gap-6 md:flex-row md:items-start">
+            <div className="text-5xl">{project.icon}</div>
 
-          <div className="flex-1">
-            <div className="mb-2 font-mono text-xs uppercase tracking-[0.24em] text-clay-soft">
-              {project.subtitle}
+            <div className="flex-1">
+              <div className="mb-2 font-mono text-xs uppercase tracking-[0.24em] text-clay-soft">
+                {project.subtitle}
+              </div>
+              <h3 className="mb-4 font-display text-2xl italic md:text-3xl">{project.title}</h3>
+              <p className="mb-6 max-w-3xl leading-relaxed text-paper/70">{project.description}</p>
+              <div className="mb-6 flex flex-wrap gap-2">
+                {project.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded border border-cobalt/25 bg-cobalt/10 px-3 py-1 font-mono text-xs text-cobalt-soft"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+              <a
+                href="https://github.com/Razdsgn"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-sm text-paper/70 transition-colors hover:text-paper"
+              >
+                <Github size={15} /> Voir GitHub <ExternalLink size={12} />
+              </a>
             </div>
-            <h3 className="mb-4 font-display text-2xl italic md:text-3xl">{project.title}</h3>
-            <p className="mb-6 max-w-3xl leading-relaxed text-paper/70">{project.description}</p>
-            <div className="mb-6 flex flex-wrap gap-2">
-              {project.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded border border-cobalt/25 bg-cobalt/10 px-3 py-1 font-mono text-xs text-cobalt-soft"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-            <a
-              href="https://github.com/Razdsgn"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm text-paper/70 transition-colors hover:text-paper"
-            >
-              <Github size={15} /> Voir GitHub <ExternalLink size={12} />
-            </a>
           </div>
         </div>
       </div>
@@ -428,10 +444,13 @@ export default function Home() {
     return () => window.removeEventListener("mousemove", onMove);
   }, []);
 
-  const paperOpacity = useTransform(heroProgress, [0, 0.55], [1, 0]);
-  const paperY = useTransform(heroProgress, [0, 0.55], [0, -50]);
-  const inkOpacity = useTransform(heroProgress, [0.3, 1], [0, 1]);
-  const inkY = useTransform(heroProgress, [0.3, 1], [50, 0]);
+  // Усиленный переход между панелями
+  const paperOpacity = useTransform(heroProgress, [0, 0.4, 0.55], [1, 0.8, 0]);
+  const paperScale = useTransform(heroProgress, [0, 0.55], [1, 0.9]);
+  const paperY = useTransform(heroProgress, [0, 0.55], [0, -80]);
+  const inkOpacity = useTransform(heroProgress, [0.25, 0.6, 1], [0, 0.9, 1]);
+  const inkY = useTransform(heroProgress, [0.3, 1], [60, 0]);
+  const inkScale = useTransform(heroProgress, [0.3, 1], [0.95, 1]);
   const cueOpacity = useTransform(heroProgress, [0, 0.12], [1, 0]);
 
   const roles = [
@@ -447,11 +466,11 @@ export default function Home() {
     <>
       <AmbientGrid />
 
-      {/* Свечение за курсором */}
+      {/* Свечение за курсором (усилено) */}
       <div
-        className="fixed inset-0 z-0 pointer-events-none"
+        className="fixed inset-0 z-0 pointer-events-none radial-glow"
         style={{
-          background: `radial-gradient(circle at ${mousePos.x * 100}% ${mousePos.y * 100}%, rgba(61,90,254,0.08), transparent 70%)`,
+          background: `radial-gradient(circle at ${mousePos.x * 100}% ${mousePos.y * 100}%, rgba(61,90,254,0.15), transparent 80%)`,
         }}
       />
 
@@ -461,7 +480,7 @@ export default function Home() {
           <div className="sticky top-0 h-screen overflow-hidden">
             {/* Panneau "papier" — Coordination & Design */}
             <motion.div
-              style={{ opacity: paperOpacity, y: paperY }}
+              style={{ opacity: paperOpacity, y: paperY, scale: paperScale }}
               className="absolute inset-0 flex items-center justify-center bg-paper px-6 text-graphite"
             >
               <span className="crop-mark tl" />
@@ -474,10 +493,11 @@ export default function Home() {
                 <p className="mb-6 font-mono text-xs uppercase tracking-[0.3em] text-clay">
                   Coordination & Design — 2013 – 2022
                 </p>
-                <h1 className="mb-8 font-display text-6xl italic leading-none tracking-tight md:text-8xl">
+                {/* Имя теперь моноширинное и переливающееся */}
+                <h1 className="mb-8 font-mono text-6xl font-bold leading-none tracking-tight md:text-8xl gradient-text">
                   Raman
                   <br />
-                  <span className="not-italic font-medium">Khaniakou</span>
+                  <span className="font-bold">Khaniakou</span>
                 </h1>
                 <div className="flex items-center justify-center gap-4" aria-hidden>
                   {[
@@ -499,7 +519,7 @@ export default function Home() {
 
             {/* Panneau "ink" — Développement Symfony */}
             <motion.div
-              style={{ opacity: inkOpacity, y: inkY }}
+              style={{ opacity: inkOpacity, y: inkY, scale: inkScale }}
               className="absolute inset-0 flex items-center justify-center bg-ink px-6"
             >
               <div className="editor-gutter w-full max-w-3xl rounded-lg border border-ink-line bg-ink-soft p-6 font-mono text-sm md:p-10 md:text-base">
@@ -848,7 +868,6 @@ export default function Home() {
               className="flex justify-center gap-8"
             >
               {[
-                // TODO(Raman): remplace par ton URL LinkedIn réelle avant mise en ligne.
                 { label: "LinkedIn", href: "#", icon: <Linkedin size={16} /> },
                 { label: "GitHub", href: "https://github.com/Razdsgn", icon: <Github size={16} /> },
               ].map((social) => (
