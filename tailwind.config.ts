@@ -9,44 +9,31 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ink: {
-          DEFAULT: "#131310",
-          soft: "#1B1B16",
-          line: "rgba(233, 228, 216, 0.09)",
-        },
-        paper: {
-          DEFAULT: "#E9E4D8",
-          soft: "#F2EEE4",
-          line: "rgba(19, 19, 16, 0.1)",
-        },
-        graphite: "#55534A",
-        mist: "#9CA39A",
-        clay: {
-          DEFAULT: "#9C6B3F",
-          soft: "#C79A6C",
-        },
-        cobalt: {
-          DEFAULT: "#3D5AFE",
-          soft: "#7C90FF",
-        },
-        background: "#131310",
-        foreground: "#E9E4D8",
-        muted: "#9CA39A",
-        border: "rgba(233, 228, 216, 0.1)",
+        background: "#EEEEEE",
+        foreground: "#000000",
+        primary: "#000000",
+        secondary: "#D5F74C",
+        muted: "#888888",
+        border: "rgba(0, 0, 0, 0.08)",
+        card: "#FFFFFF",
       },
       fontFamily: {
-        display: ["var(--font-fraunces)", "Georgia", "serif"],
-        mono: ["var(--font-mono)", "JetBrains Mono", "monospace"],
-        sans: ["var(--font-inter)", "Inter", "sans-serif"],
+        heading: ["'Inter Tight'", "sans-serif"],
+        body: ["Inter", "sans-serif"],
+        mono: ["'JetBrains Mono'", "monospace"],
+      },
+      fontSize: {
+        "hero": ["4rem", { lineHeight: "1.2", fontWeight: "700" }],
+        "section": ["2.5rem", { lineHeight: "1.2", fontWeight: "700" }],
+      },
+      spacing: {
+        "18": "4.5rem",
+        "22": "5.5rem",
       },
       animation: {
         "fade-in": "fadeIn 0.6s ease-out",
         "slide-up": "slideUp 0.6s ease-out",
-        "slide-down": "slideDown 0.6s ease-out",
         "scale-in": "scaleIn 0.6s ease-out",
-        shimmer: "shimmer 2s infinite",
-        caret: "caret 1.1s step-end infinite",
-        gradient: "gradientShift 8s ease infinite",
       },
       keyframes: {
         fadeIn: {
@@ -54,34 +41,13 @@ const config: Config = {
           to: { opacity: "1" },
         },
         slideUp: {
-          from: { opacity: "0", transform: "translateY(10px)" },
-          to: { opacity: "1", transform: "translateY(0)" },
-        },
-        slideDown: {
-          from: { opacity: "0", transform: "translateY(-10px)" },
+          from: { opacity: "0", transform: "translateY(20px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
         scaleIn: {
-          from: { opacity: "0", transform: "scale(0.95)" },
+          from: { opacity: "0", transform: "scale(0.96)" },
           to: { opacity: "1", transform: "scale(1)" },
         },
-        shimmer: {
-          "0%": { backgroundPosition: "-1000px 0" },
-          "100%": { backgroundPosition: "1000px 0" },
-        },
-        caret: {
-          "0%, 45%": { opacity: "1" },
-          "50%, 95%": { opacity: "0" },
-          "100%": { opacity: "1" },
-        },
-        gradientShift: {
-          "0%": { backgroundPosition: "0% 50%" },
-          "50%": { backgroundPosition: "100% 50%" },
-          "100%": { backgroundPosition: "0% 50%" },
-        },
-      },
-      backdropBlur: {
-        xs: "2px",
       },
     },
   },
