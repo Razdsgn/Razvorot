@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Inter, Fraunces, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/navbar";
-import LenisProvider from "@/components/lenis-provider";
+
+import Navbar from "@/components/layout/Navbar";
+import LenisProvider from "@/components/providers/LenisProvider";
 import CustomCursor from "@/components/CustomCursor";
 import Particles from "@/components/Particles";
 
