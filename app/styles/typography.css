@@ -1,0 +1,27 @@
+.display-xl{
+    font-size:clamp(72px,11vw,180px);
+    line-height:.9;
+    letter-spacing:-.05em;
+    font-weight:600;
+}
+
+.display-lg{
+    font-size:clamp(48px,7vw,96px);
+    line-height:.95;
+    letter-spacing:-.04em;
+}
+
+.heading{
+    font-size:clamp(24px,3vw,42px);
+}
+
+.body{
+    font-size:18px;
+    line-height:1.6;
+}
+
+.caption{
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.18em;
+}
