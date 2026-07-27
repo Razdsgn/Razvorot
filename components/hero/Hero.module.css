@@ -26,8 +26,16 @@
 
 }
 
+.title span{
+    display:block;
+    overflow:hidden;
+}
+
 .title{
 
+    pointer-events:none;
+
+    user-select:none;
     display:flex;
 
     flex-direction:column;
