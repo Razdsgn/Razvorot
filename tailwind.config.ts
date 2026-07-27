@@ -18,13 +18,14 @@ const config: Config = {
         card: "#FFFFFF",
       },
       fontFamily: {
-        heading: ["'Inter Tight'", "sans-serif"],
-        body: ["Inter", "sans-serif"],
-        mono: ["'JetBrains Mono'", "monospace"],
+        heading: ["var(--font-inter-tight)", "Inter Tight", "sans-serif"],
+        sans: ["var(--font-inter)", "Inter", "sans-serif"],
+        body: ["var(--font-inter)", "Inter", "sans-serif"],
       },
       fontSize: {
-        "hero": ["4rem", { lineHeight: "1.2", fontWeight: "700" }],
-        "section": ["2.5rem", { lineHeight: "1.2", fontWeight: "700" }],
+        hero: ["clamp(3.5rem,11vw,9rem)", { lineHeight: "0.95", fontWeight: "600" }],
+        section: ["clamp(3rem,8vw,7rem)", { lineHeight: "1.1", fontWeight: "600" }],
+        "stat-lg": ["clamp(2.5rem,5vw,4rem)", { lineHeight: "1.2", fontWeight: "700" }],
       },
       spacing: {
         "18": "4.5rem",
@@ -33,7 +34,8 @@ const config: Config = {
       animation: {
         "fade-in": "fadeIn 0.6s ease-out",
         "slide-up": "slideUp 0.6s ease-out",
-        "scale-in": "scaleIn 0.6s ease-out",
+        marquee: "marquee 30s linear infinite",
+        "marquee-reverse": "marquee-reverse 30s linear infinite",
       },
       keyframes: {
         fadeIn: {
@@ -44,10 +46,17 @@ const config: Config = {
           from: { opacity: "0", transform: "translateY(20px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
-        scaleIn: {
-          from: { opacity: "0", transform: "scale(0.96)" },
-          to: { opacity: "1", transform: "scale(1)" },
+        marquee: {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-50%)" },
         },
+        "marquee-reverse": {
+          from: { transform: "translateX(-50%)" },
+          to: { transform: "translateX(0)" },
+        },
+      },
+      backdropBlur: {
+        glass: "20px",
       },
     },
   },

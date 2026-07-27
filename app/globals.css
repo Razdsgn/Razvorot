@@ -1,17 +1,14 @@
-@import "../styles/variables.css";
-@import "../styles/typography.css";
-@import "../styles/utilities.css";
-
-/* app/globals.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --ink: #131310;
-  --paper: #e9e4d8;
-  --clay: #9c6b3f;
-  --cobalt: #3d5aFE;
+  --background: #eeeeee;
+  --foreground: #000000;
+  --accent: #d5f74c;
+  --card: #ffffff;
+  --muted: #888888;
+  --border: rgba(0, 0, 0, 0.08);
 }
 
 @layer base {
@@ -20,7 +17,7 @@
   }
 
   body {
-    @apply bg-ink text-paper;
+    @apply bg-background text-foreground font-sans antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
     cursor: none;
   }
@@ -38,29 +35,106 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #3a382f;
+    background: rgba(0, 0, 0, 0.15);
     border-radius: 6px;
   }
 
   ::selection {
-    background-color: rgba(61, 90, 254, 0.35);
-    color: white;
+    background-color: rgba(213, 247, 76, 0.5);
+    color: #000000;
   }
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+@layer components {
+  .glass-header {
+    background-color: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .section-label {
+    @apply font-sans text-base font-semibold text-foreground;
+  }
+
+  .section-title {
+    @apply font-heading text-section text-foreground;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-full bg-secondary px-11 py-4 font-sans text-base font-semibold text-primary transition-all duration-300;
+  }
+
+  .btn-primary:hover {
+    @apply bg-primary text-secondary;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center rounded-full border border-foreground/20 bg-transparent px-11 py-4 font-sans text-base font-semibold text-foreground transition-all duration-300;
+  }
+
+  .btn-outline:hover {
+    @apply border-foreground bg-foreground text-background;
+  }
+
+  .project-card {
+    @apply relative overflow-hidden rounded-none bg-card transition-transform duration-500;
+  }
+
+  .project-card:hover {
+    transform: scale(0.98);
+  }
+
+  .project-card-image {
+    @apply aspect-[4/3] w-full object-cover transition-transform duration-700;
+  }
+
+  .project-card:hover .project-card-image {
+    transform: scale(1.05);
+  }
+
+  .stat-card {
+    @apply flex flex-col gap-4 border-t border-foreground/10 pt-8;
+  }
+
+  .accordion-item {
+    @apply border-b border-foreground/10;
+  }
+
+  .accordion-trigger {
+    @apply flex w-full items-center justify-between py-6 text-left font-heading text-xl font-semibold md:text-2xl;
+  }
+
+  .accordion-content {
+    @apply overflow-hidden pb-6 text-muted;
+  }
+
+  .form-input {
+    @apply w-full border-0 border-b border-foreground/20 bg-transparent py-4 font-sans text-base text-foreground placeholder:text-muted/60 focus:border-foreground focus:outline-none;
+  }
+
+  .form-label {
+    @apply mb-2 block font-sans text-sm font-semibold text-foreground;
+  }
+
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee 35s linear infinite;
+  }
+
+  .marquee-track:hover {
+    animation-play-state: paused;
   }
 }
 
-/* ── Кастомный курсор ── */
+/* Custom cursor — kept as-is per user request */
 .cursor-dot {
   pointer-events: none;
   position: fixed;
   width: 8px;
   height: 8px;
-  background: var(--cobalt);
+  background: #000000;
   border-radius: 50%;
   z-index: 9999;
   will-change: transform;
@@ -71,113 +145,63 @@
   position: fixed;
   width: 40px;
   height: 40px;
-  border: 1.5px solid rgba(233, 228, 216, 0.4);
+  border: 1.5px solid rgba(0, 0, 0, 0.25);
   border-radius: 50%;
   z-index: 9998;
   will-change: transform;
   transition: width 0.25s ease, height 0.25s ease, border-color 0.25s ease, background 0.25s ease;
 }
+
 .cursor-ring.hover {
   width: 70px;
   height: 70px;
-  border-color: rgba(61, 90, 254, 0.6);
-  background: rgba(61, 90, 254, 0.08);
+  border-color: rgba(213, 247, 76, 0.8);
+  background: rgba(213, 247, 76, 0.15);
 }
 
-/* Тонкая точечная сетка — отсылка к фону canvas в дизайн-инструментах,
-   вместо размытых градиентных блобов. */
-.dot-grid {
-  background-image: radial-gradient(rgba(233, 228, 216, 0.07) 1px, transparent 1px);
-  background-size: 28px 28px;
+.hero-gradient {
+  background: radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
 }
 
-@media (max-width: 768px) {
-  .dot-grid {
-    display: none;
+.scroll-indicator {
+  animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(8px);
   }
 }
 
-/* ══════════════════════════════════════════════════════════════
-   РЕГИСТР "ДИЗАЙН" — линейка, crop-marks, свотчи
-   ══════════════════════════════════════════════════════════════ */
-
-/* Горизонтальная линейка с тиками через каждые 10px, как в Figma/Illustrator */
-.ruler-x {
-  background-image: repeating-linear-gradient(
-    to right,
-    rgba(19, 19, 16, 0.35) 0,
-    rgba(19, 19, 16, 0.35) 1px,
-    transparent 1px,
-    transparent 10px
-  );
-  background-size: 100px 100%;
-  background-position: 0 bottom;
-  background-repeat: repeat-x;
-}
-.ruler-x::before {
-  content: "";
-}
-
-/* Crop-mark уголки, как метки обрезки в допечатной подготовке */
-.crop-mark {
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  border-color: var(--ink);
-  opacity: 0.5;
-}
-.crop-mark.tl { top: 10px; left: 10px; border-top: 1.5px solid; border-left: 1.5px solid; }
-.crop-mark.tr { top: 10px; right: 10px; border-top: 1.5px solid; border-right: 1.5px solid; }
-.crop-mark.bl { bottom: 10px; left: 10px; border-bottom: 1.5px solid; border-left: 1.5px solid; }
-.crop-mark.br { bottom: 10px; right: 10px; border-bottom: 1.5px solid; border-right: 1.5px solid; }
-
-/* ══════════════════════════════════════════════════════════════
-   РЕГИСТР "КОД" — line-number gutter, editor chrome
-   ══════════════════════════════════════════════════════════════ */
-
-.editor-gutter {
-  border-right: 1px solid rgba(233, 228, 216, 0.09);
-  color: rgba(156, 163, 154, 0.55);
-  font-variant-numeric: tabular-nums;
-  user-select: none;
-}
-
-.editor-dots span {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  border-radius: 9999px;
-}
-
-.caret-blink {
-  animation: caret 1.1s step-end infinite;
-}
-
-/* ── Утилиты ── */
-.hover-lift {
-  transition: transform 0.3s ease;
-}
-.hover-lift:hover {
-  transform: translateY(-4px);
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 :focus-visible {
-  outline: 2px solid var(--cobalt);
+  outline: 2px solid var(--accent);
   outline-offset: 4px;
 }
 
-/* ── Мобильные устройства ── */
 @media (max-width: 768px), (hover: none) {
   body {
     cursor: auto;
   }
+
   .cursor-dot,
   .cursor-ring {
     display: none;
   }
 }
 
-/* ── Reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -186,39 +210,4 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-}
-
-/* ── НОВОЕ: шумовая текстура (усилена) ── */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9999;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
-  background-repeat: repeat;
-  background-size: 256px 256px;
-  opacity: 0.6;
-  /* убран mix-blend-mode для лучшей видимости */
-}
-
-/* ── НОВОЕ: анимированный градиент для текста ── */
-.gradient-text {
-  background: linear-gradient(135deg, #3d5afe, #9c6b3f, #3d5afe);
-  background-size: 300% 300%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: gradientShift 8s ease infinite;
-}
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* ── НОВОЕ: радиальное свечение (используется в page.tsx) ── */
-.radial-glow {
-  background: radial-gradient(circle at 50% 50%, rgba(61, 90, 254, 0.08), transparent 70%);
-  transition: background 0.1s ease-out;
 }

@@ -1,30 +1,22 @@
 import type { Metadata } from "next";
-import { Inter, Fraunces, JetBrains_Mono } from "next/font/google";
+import { Inter, Inter_Tight } from "next/font/google";
 import "./globals.css";
 
 import Navbar from "@/components/layout/Navbar";
 import LenisProvider from "@/components/providers/LenisProvider";
 import CustomCursor from "@/components/CustomCursor";
-import Particles from "@/components/Particles";
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
-const fraunces = Fraunces({
+const interTight = Inter_Tight({
   subsets: ["latin"],
-  variable: "--font-fraunces",
-  weight: ["400", "500", "600"],
-  style: ["normal", "italic"],
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-  weight: ["400", "500"],
+  variable: "--font-inter-tight",
+  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
 });
 
@@ -81,14 +73,13 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={`scroll-smooth ${inter.variable} ${fraunces.variable} ${jetbrainsMono.variable}`}
+      className={`scroll-smooth ${inter.variable} ${interTight.variable}`}
     >
       <body className="font-sans antialiased">
         <LenisProvider>
           <Navbar />
           {children}
           <CustomCursor />
-          <Particles />
         </LenisProvider>
       </body>
     </html>

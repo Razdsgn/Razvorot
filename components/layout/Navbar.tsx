@@ -4,27 +4,32 @@ import { useState, useEffect, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
-// Пункты меню привязаны к реальным id секций в app/page.tsx.
-// Префикс — это не декоративная нумерация, а адрес перехода,
-// как номер строки в файле: реальная смысловая связь с код-регистром.
 const navItems = [
-  { index: "01", label: "Parcours", href: "#about" },
-  { index: "02", label: "Projets", href: "#work" },
-  { index: "03", label: "Compétences", href: "#skills" },
-  { index: "04", label: "Contact", href: "#contact" },
+  { label: "Parcours", href: "#about" },
+  { label: "Projets", href: "#work" },
+  { label: "Compétences", href: "#skills" },
+  { label: "Contact", href: "#contact" },
 ];
 
 const CONTACT_EMAIL = "rkhonyakov@gmail.com";
+
+function Logo() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden>
+      <path
+        d="M16 2L18.5 13.5L30 16L18.5 18.5L16 30L13.5 18.5L2 16L13.5 13.5L16 2Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
 
 const Navbar = memo(function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
-
+    const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -38,67 +43,60 @@ const Navbar = memo(function Navbar() {
 
   return (
     <>
-      <motion.nav
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6 }}
+      <motion.header
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled
-            ? "bg-ink/95 backdrop-blur-xl border-b border-ink-line shadow-lg shadow-black/20"
-            : "bg-transparent"
+          scrolled ? "glass-header shadow-sm" : "bg-transparent"
         }`}
       >
-        <div className="max-w-[1400px] mx-auto px-6 lg:px-12 py-5 flex items-center justify-between">
+        <div className="mx-auto flex h-[100px] max-w-[1400px] items-center justify-between px-[2%] md:px-[2%]">
           <Link
             href="/"
-            className="flex items-baseline gap-1 text-lg tracking-tight hover:opacity-70 transition-opacity duration-300"
+            className="flex items-center text-foreground transition-opacity hover:opacity-70"
+            aria-label="Accueil"
           >
-            <span className="font-display italic">Raman</span>
-            <span className="font-mono text-sm text-cobalt-soft">.dev</span>
+            <Logo />
           </Link>
 
-          <ul className="hidden lg:flex items-center gap-9">
+          <nav className="hidden items-center gap-[30px] lg:flex">
             {navItems.map((item) => (
-              <li key={item.href}>
-                <a
-                  href={item.href}
-                  className="group flex items-baseline gap-2 text-[13px] text-paper/70 hover:text-paper transition-colors duration-300 font-light tracking-wide"
-                >
-                  <span className="font-mono text-[11px] text-mist group-hover:text-cobalt-soft transition-colors">
-                    {item.index}
-                  </span>
-                  {item.label}
-                </a>
-              </li>
+              <a
+                key={item.href}
+                href={item.href}
+                className="font-sans text-base font-semibold text-foreground transition-opacity hover:opacity-60"
+              >
+                {item.label}
+              </a>
             ))}
-          </ul>
+          </nav>
 
-          <a
-            href={`mailto:${CONTACT_EMAIL}`}
-            className="hidden lg:block font-mono text-[13px] text-paper/70 hover:text-cobalt-soft transition-colors duration-300 tracking-wide"
-          >
-            dispo_oct_2026
-          </a>
+          <div className="hidden lg:block">
+            <a href={`mailto:${CONTACT_EMAIL}`} className="btn-primary !py-4 !px-[45px]">
+              Me contacter
+            </a>
+          </div>
 
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden relative w-6 h-6 flex flex-col justify-center items-center group"
+            className="relative flex h-6 w-6 flex-col items-center justify-center lg:hidden"
             aria-label="Ouvrir le menu"
             aria-expanded={isOpen}
           >
             <span
-              className={`w-6 h-[2px] bg-paper transition-all duration-300 ${
-                isOpen ? "rotate-45 translate-y-[1px]" : "mb-1"
+              className={`h-[2px] w-6 bg-foreground transition-all duration-300 ${
+                isOpen ? "translate-y-[1px] rotate-45" : "mb-1.5"
               }`}
             />
             <span
-              className={`w-6 h-[2px] bg-paper transition-all duration-300 ${
-                isOpen ? "-rotate-45 -translate-y-[1px]" : ""
+              className={`h-[2px] w-6 bg-foreground transition-all duration-300 ${
+                isOpen ? "-translate-y-[1px] -rotate-45" : ""
               }`}
             />
           </button>
         </div>
-      </motion.nav>
+      </motion.header>
 
       <AnimatePresence>
         {isOpen && (
@@ -106,61 +104,51 @@ const Navbar = memo(function Navbar() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
             className="fixed inset-0 z-40 lg:hidden"
           >
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+            <div
+              className="absolute inset-0 bg-background/95 backdrop-blur-xl"
               onClick={() => setIsOpen(false)}
-              className="absolute inset-0 bg-ink/95 backdrop-blur-xl"
             />
-
-            <motion.div
+            <motion.nav
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
               className="absolute inset-0 flex items-center justify-center"
             >
-              <nav className="text-center">
-                <ul className="space-y-8">
-                  {navItems.map((item, idx) => (
-                    <motion.li
-                      key={item.href}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.1 + idx * 0.05, duration: 0.4 }}
+              <ul className="space-y-8 text-center">
+                {navItems.map((item, idx) => (
+                  <motion.li
+                    key={item.href}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.05 + idx * 0.05 }}
+                  >
+                    <a
+                      href={item.href}
+                      onClick={() => setIsOpen(false)}
+                      className="font-heading text-4xl font-semibold text-foreground"
                     >
-                      <a
-                        href={item.href}
-                        onClick={() => setIsOpen(false)}
-                        className="flex items-baseline justify-center gap-3 text-3xl md:text-4xl font-light text-paper/70 hover:text-paper transition-colors duration-300 tracking-wide"
-                      >
-                        <span className="font-mono text-base text-mist">{item.index}</span>
-                        {item.label}
-                      </a>
-                    </motion.li>
-                  ))}
-                </ul>
-
-                <motion.div
+                      {item.label}
+                    </a>
+                  </motion.li>
+                ))}
+                <motion.li
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                  className="mt-16"
+                  transition={{ delay: 0.4 }}
+                  className="pt-8"
                 >
                   <a
                     href={`mailto:${CONTACT_EMAIL}`}
                     onClick={() => setIsOpen(false)}
-                    className="font-mono text-sm text-mist hover:text-cobalt-soft transition-colors duration-300 tracking-wide"
+                    className="btn-primary"
                   >
-                    {CONTACT_EMAIL}
+                    Me contacter
                   </a>
-                </motion.div>
-              </nav>
-            </motion.div>
+                </motion.li>
+              </ul>
+            </motion.nav>
           </motion.div>
         )}
       </AnimatePresence>
