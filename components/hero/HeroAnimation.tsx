@@ -1,27 +1,32 @@
 "use client";
 
-import { useLayoutEffect } from "react";
+import { RefObject } from "react";
+
+import { useGSAP } from "@gsap/react";
+
 import gsap from "gsap";
 
-export default function HeroAnimation() {
-  useLayoutEffect(() => {
-    const lines = document.querySelectorAll(".hero-line");
+type Props = {
+  root: RefObject<HTMLElement | null>;
+};
 
-    gsap.fromTo(
-      lines,
-      {
-        y: 160,
+export default function HeroAnimation({ root }: Props) {
+  useGSAP(
+    () => {
+      const lines = gsap.utils.toArray<HTMLElement>(".hero-line");
+
+      gsap.from(lines, {
+        yPercent: 110,
         opacity: 0,
-      },
-      {
-        y: 0,
-        opacity: 1,
         duration: 1.3,
         stagger: 0.12,
         ease: "power4.out",
-      }
-    );
-  }, []);
+      });
+    },
+    {
+      scope: root,
+    }
+  );
 
   return null;
 }
