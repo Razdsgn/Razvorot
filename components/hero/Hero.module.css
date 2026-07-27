@@ -79,3 +79,12 @@
         rgba(255,255,255,.08),
         transparent 70%);
 }
+
+.mask{
+    overflow:hidden;
+}
+
+.hero-line{
+    display:block;
+    will-change:transform;
+}
