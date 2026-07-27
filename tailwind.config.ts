@@ -9,23 +9,39 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#EEEEEE",
-        foreground: "#000000",
-        primary: "#000000",
-        secondary: "#D5F74C",
-        muted: "#888888",
-        border: "rgba(0, 0, 0, 0.08)",
-        card: "#FFFFFF",
+        // Colors are read straight from the CSS custom properties in
+        // app/styles/variables.css — one place to retune the palette
+        // instead of duplicating hex values here.
+        background: "var(--background)",
+        foreground: "var(--foreground)",
+        primary: "var(--foreground)",
+        secondary: "var(--accent)",
+        accent: "var(--accent)",
+        muted: "var(--muted)",
+        border: "var(--line)",
+        card: "var(--card)",
       },
       fontFamily: {
-        heading: ["var(--font-inter-tight)", "Inter Tight", "sans-serif"],
+        // Fraunces (elegant variable serif, incl. italic) carries every
+        // heading/number on the site — the editorial "creative studio"
+        // signature. Inter stays for body copy, labels and UI chrome.
+        heading: ["var(--font-fraunces)", "Fraunces", "serif"],
         sans: ["var(--font-inter)", "Inter", "sans-serif"],
         body: ["var(--font-inter)", "Inter", "sans-serif"],
       },
       fontSize: {
-        hero: ["clamp(3.5rem,11vw,9rem)", { lineHeight: "0.95", fontWeight: "600" }],
-        section: ["clamp(3rem,8vw,7rem)", { lineHeight: "1.1", fontWeight: "600" }],
-        "stat-lg": ["clamp(2.5rem,5vw,4rem)", { lineHeight: "1.2", fontWeight: "700" }],
+        hero: [
+          "clamp(3.5rem,11vw,9.5rem)",
+          { lineHeight: "0.95", fontWeight: "600", letterSpacing: "-0.03em" },
+        ],
+        section: [
+          "clamp(3rem,8vw,7rem)",
+          { lineHeight: "1.05", fontWeight: "600", letterSpacing: "-0.02em" },
+        ],
+        "stat-lg": [
+          "clamp(2.75rem,5.5vw,4.5rem)",
+          { lineHeight: "1.1", fontWeight: "600", letterSpacing: "-0.02em" },
+        ],
       },
       spacing: {
         "18": "4.5rem",
