@@ -1,11 +1,21 @@
-import styles from "./Hero.module.css";
+<h1 className={styles.title}>
 
-export default function HeroHeading() {
-  return (
-    <h1 className={styles.title}>
-      <span className="hero-line">CREATING</span>
-      <span className="hero-line">DIGITAL</span>
-      <span className="hero-line">EXPERIENCES</span>
-    </h1>
-  );
-}
+    <div className={styles.mask}>
+        <span className="hero-line">
+            CREATING
+        </span>
+    </div>
+
+    <div className={styles.mask}>
+        <span className="hero-line">
+            DIGITAL
+        </span>
+    </div>
+
+    <div className={styles.mask}>
+        <span className="hero-line">
+            EXPERIENCES
+        </span>
+    </div>
+
+</h1>
