@@ -9,17 +9,19 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Colors are read straight from the CSS custom properties in
-        // app/styles/variables.css — one place to retune the palette
-        // instead of duplicating hex values here.
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-        primary: "var(--foreground)",
-        secondary: "var(--accent)",
-        accent: "var(--accent)",
-        muted: "var(--muted)",
+        // Colors read straight from the CSS custom properties in
+        // app/styles/variables.css (one place to retune the palette).
+        // Uses the rgb(var(--x-rgb) / <alpha-value>) pattern — required
+        // for Tailwind's opacity modifiers (e.g. `border-foreground/20`)
+        // to work with CSS-variable-backed colors.
+        background: "rgb(var(--background-rgb) / <alpha-value>)",
+        foreground: "rgb(var(--foreground-rgb) / <alpha-value>)",
+        primary: "rgb(var(--foreground-rgb) / <alpha-value>)",
+        secondary: "rgb(var(--accent-rgb) / <alpha-value>)",
+        accent: "rgb(var(--accent-rgb) / <alpha-value>)",
+        muted: "rgb(var(--muted-rgb) / <alpha-value>)",
         border: "var(--line)",
-        card: "var(--card)",
+        card: "rgb(var(--card-rgb) / <alpha-value>)",
       },
       fontFamily: {
         // Fraunces (elegant variable serif, incl. italic) carries every
