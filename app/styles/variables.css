@@ -25,6 +25,16 @@
   --accent: #c9542c;
   --accent-soft: rgba(201, 84, 44, 0.14);
 
+  /* RGB-channel triplets (no commas, no rgb()) of the colors above.
+     Required so Tailwind's opacity modifiers work, e.g. `border-foreground/20`
+     compiles to `rgb(var(--foreground-rgb) / 0.2)`. Keep every value here in
+     sync with its hex counterpart above. */
+  --background-rgb: 244 241 234;
+  --card-rgb: 255 255 255;
+  --foreground-rgb: 20 19 14;
+  --muted-rgb: 124 119 108;
+  --accent-rgb: 201 84 44;
+
   /* Radius — kept mostly sharp on purpose (editorial, not bubbly);
      pill buttons opt in explicitly via rounded-full in Tailwind */
   --radius-sm: 6px;
