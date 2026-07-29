@@ -1,0 +1,222 @@
+@import "./styles/variables.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    cursor: none;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(20, 19, 14, 0.18);
+    border-radius: 6px;
+  }
+
+  ::selection {
+    background-color: var(--accent-soft);
+    color: var(--foreground);
+  }
+}
+
+@layer components {
+  /* Sticky header surface — cream glass instead of pure white, with a
+     hairline rule instead of a heavy drop shadow (flatter, editorial) */
+  .glass-header {
+    background-color: rgba(244, 241, 234, 0.82);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  /* Small uppercase tracked eyebrow used above every section title —
+     the "Mes Réalisations" / "Ce que je propose" style label */
+  .section-label {
+    @apply inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-[0.16em] text-muted;
+  }
+
+  .section-label::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--accent);
+  }
+
+  .section-title {
+    @apply font-heading text-section tracking-tight text-foreground;
+  }
+
+  /* Primary CTA — solid ink fill, not the accent colour. On a premium
+     editorial site the accent stays a small detail; large fills stay
+     monochrome so the terracotta keeps its impact. */
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-full bg-foreground px-11 py-4 font-sans text-base font-semibold text-background transition-all duration-300;
+  }
+
+  .btn-primary:hover {
+    @apply bg-accent text-white;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center rounded-full border border-foreground/20 bg-transparent px-11 py-4 font-sans text-base font-semibold text-foreground transition-all duration-300;
+  }
+
+  .btn-outline:hover {
+    @apply border-foreground bg-foreground text-background;
+  }
+
+  .project-card {
+    @apply relative overflow-hidden rounded-none bg-card transition-transform duration-500;
+  }
+
+  .project-card:hover {
+    transform: scale(0.98);
+  }
+
+  .project-card-image {
+    @apply aspect-[4/3] w-full object-cover transition-transform duration-700;
+  }
+
+  .project-card:hover .project-card-image {
+    transform: scale(1.05);
+  }
+
+  .stat-card {
+    @apply flex flex-col gap-4 border-t border-foreground/10 pt-8;
+  }
+
+  .accordion-item {
+    @apply border-b border-foreground/10;
+  }
+
+  .accordion-trigger {
+    @apply flex w-full items-center justify-between py-6 text-left font-heading text-xl font-semibold md:text-2xl;
+  }
+
+  .accordion-content {
+    @apply overflow-hidden pb-6 text-muted;
+  }
+
+  .form-input {
+    @apply w-full border-0 border-b border-foreground/20 bg-transparent py-4 font-sans text-base text-foreground placeholder:text-muted/60 focus:border-accent focus:outline-none;
+  }
+
+  .form-label {
+    @apply mb-2 block font-sans text-sm font-semibold text-foreground;
+  }
+
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee 35s linear infinite;
+  }
+
+  .marquee-track:hover {
+    animation-play-state: paused;
+  }
+}
+
+/* Custom cursor — kept as-is per user request */
+.cursor-dot {
+  pointer-events: none;
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  background: #000000;
+  border-radius: 50%;
+  z-index: 9999;
+  will-change: transform;
+}
+
+.cursor-ring {
+  pointer-events: none;
+  position: fixed;
+  width: 40px;
+  height: 40px;
+  border: 1.5px solid rgba(0, 0, 0, 0.25);
+  border-radius: 50%;
+  z-index: 9998;
+  will-change: transform;
+  transition: width 0.25s ease, height 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+}
+
+.cursor-ring.hover {
+  width: 70px;
+  height: 70px;
+  border-color: rgba(213, 247, 76, 0.8);
+  background: rgba(213, 247, 76, 0.15);
+}
+
+.hero-gradient {
+  background: radial-gradient(ellipse at 50% 0%, rgba(244, 241, 234, 0.9) 0%, transparent 70%);
+}
+
+.scroll-indicator {
+  animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(8px);
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+@media (max-width: 768px), (hover: none) {
+  body {
+    cursor: auto;
+  }
+
+  .cursor-dot,
+  .cursor-ring {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
