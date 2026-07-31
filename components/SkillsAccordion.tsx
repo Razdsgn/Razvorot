@@ -71,7 +71,7 @@ export default function SkillsAccordion({ items }: SkillsAccordionProps) {
                           <h4 className="mb-4 font-sans text-sm font-semibold uppercase tracking-wider text-foreground">
                             Niveau
                           </h4>
-                          <p className="font-heading text-3xl font-semibold">{item.price}</p>
+                          <p className="font-heading text-3xl">{item.price}</p>
                         </div>
                       )}
                     </div>

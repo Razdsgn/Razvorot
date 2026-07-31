@@ -17,7 +17,7 @@ export default function Marquee({ items, speed = 35 }: MarqueeProps) {
         {doubled.map((item, i) => (
           <span
             key={`${item}-${i}`}
-            className="whitespace-nowrap font-heading text-2xl font-semibold text-foreground/80 md:text-3xl"
+            className="whitespace-nowrap font-heading text-2xl text-foreground/80 md:text-3xl"
           >
             {item}
           </span>
