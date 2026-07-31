@@ -124,7 +124,7 @@ const projects = [
     description:
       "Nouveau projet web en cours avec attention portée à la structure applicative, la qualité du code, les tests PHPUnit et une base solide.",
     tags: ["Symfony", "PHP", "PHPUnit", "TDD"],
-    gradient: "from-[#c9542c] via-[#a8431f] to-[#14130e]",
+    gradient: "from-[#d9a24b] via-[#a67a35] to-[#121110]",
   },
 ];
 
@@ -226,7 +226,7 @@ const ProjectCard = memo(function ProjectCard({
             />
           </div>
           <div>
-            <h3 className="font-heading text-2xl font-semibold text-white md:text-3xl">{project.title}</h3>
+            <h3 className="font-heading text-2xl text-white md:text-3xl">{project.title}</h3>
             <p className="mt-1 font-sans text-sm text-white/70">{project.subtitle}</p>
           </div>
         </div>
@@ -270,12 +270,12 @@ export default function Home() {
               aria-hidden
             >
               <div className="relative h-32 w-32">
-                <div className="absolute inset-0 rotate-12 rounded-2xl bg-gradient-to-br from-white/60 via-white/20 to-transparent backdrop-blur-md" />
+                <div className="absolute inset-0 rotate-12 rounded-2xl bg-gradient-to-br from-foreground/10 via-foreground/5 to-transparent backdrop-blur-md" />
                 <div className="absolute inset-2 flex items-center justify-center">
                   <svg width="48" height="48" viewBox="0 0 32 32" fill="none">
                     <path
                       d="M16 2L18.5 13.5L30 16L18.5 18.5L16 30L13.5 18.5L2 16L13.5 13.5L16 2Z"
-                      fill="black"
+                      fill="var(--accent)"
                     />
                   </svg>
                 </div>
@@ -393,7 +393,7 @@ export default function Home() {
               >
                 <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                   <div className="max-w-2xl">
-                    <h3 className="font-heading text-2xl font-semibold">{project.title}</h3>
+                    <h3 className="font-heading text-2xl">{project.title}</h3>
                     <p className="mt-1 font-sans text-sm font-semibold text-muted">{project.subtitle}</p>
                     <p className="mt-4 font-sans text-sm leading-relaxed text-muted">{project.description}</p>
                   </div>
@@ -474,10 +474,10 @@ export default function Home() {
                     className="border-t border-foreground/10 py-8"
                   >
                     <div className="flex items-start gap-6">
-                      <span className="font-heading italic text-4xl font-semibold text-accent/30">{exp.step}</span>
+                      <span className="font-heading italic text-4xl text-accent/30">{exp.step}</span>
                       <div>
                         <p className="font-sans text-sm text-muted">{exp.period}</p>
-                        <h4 className="mt-1 font-heading text-xl font-semibold">{exp.title}</h4>
+                        <h4 className="mt-1 font-heading text-xl">{exp.title}</h4>
                         <p className="mt-1 font-sans text-sm font-semibold text-foreground">{exp.company}</p>
                         <p className="mt-3 font-sans text-sm leading-relaxed text-muted">{exp.description}</p>
                       </div>
@@ -500,7 +500,7 @@ export default function Home() {
                     className="border-t border-foreground/10 py-8"
                   >
                     <p className="font-sans text-sm text-muted">{edu.period}</p>
-                    <h4 className="mt-1 font-heading text-xl font-semibold">{edu.title}</h4>
+                    <h4 className="mt-1 font-heading text-xl">{edu.title}</h4>
                     <p className="mt-1 font-sans text-sm text-muted">{edu.school}</p>
                   </motion.div>
                 ))}
@@ -641,7 +641,7 @@ export default function Home() {
                     fill="currentColor"
                   />
                 </svg>
-                <span className="font-heading text-lg font-semibold">Raman Khaniakou</span>
+                <span className="font-heading text-lg">Raman Khaniakou</span>
               </div>
               <p className="font-sans text-sm text-muted">
                 Développeur Web Full-Stack · Rennes, France

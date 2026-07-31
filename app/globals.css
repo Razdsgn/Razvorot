@@ -28,7 +28,7 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: rgba(20, 19, 14, 0.18);
+    background: rgba(242, 239, 233, 0.2);
     border-radius: 6px;
   }
 
@@ -39,10 +39,10 @@
 }
 
 @layer components {
-  /* Sticky header surface — cream glass instead of pure white, with a
-     hairline rule instead of a heavy drop shadow (flatter, editorial) */
+  /* Sticky header surface — dark glass, with a hairline rule instead of
+     a heavy drop shadow (flatter, editorial) */
   .glass-header {
-    background-color: rgba(244, 241, 234, 0.82);
+    background-color: rgba(18, 17, 16, 0.82);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--line);
@@ -75,7 +75,7 @@
   }
 
   .btn-primary:hover {
-    @apply bg-accent text-white;
+    @apply bg-accent text-background;
   }
 
   .btn-outline {
@@ -111,7 +111,7 @@
   }
 
   .accordion-trigger {
-    @apply flex w-full items-center justify-between py-6 text-left font-heading text-xl font-semibold md:text-2xl;
+    @apply flex w-full items-center justify-between py-6 text-left font-heading text-xl md:text-2xl;
   }
 
   .accordion-content {
@@ -169,7 +169,7 @@
 }
 
 .hero-gradient {
-  background: radial-gradient(ellipse at 50% 0%, rgba(244, 241, 234, 0.9) 0%, transparent 70%);
+  background: radial-gradient(ellipse at 50% 0%, rgba(217, 162, 75, 0.1) 0%, transparent 70%);
 }
 
 .scroll-indicator {

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Inter_Tight, Fraunces } from "next/font/google";
+import { Inter, Inter_Tight, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 
 import Navbar from "@/components/layout/Navbar";
@@ -20,12 +20,11 @@ const interTight = Inter_Tight({
   display: "swap",
 });
 
-const fraunces = Fraunces({
+const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
-  variable: "--font-fraunces",
-  weight: "variable",
+  variable: "--font-instrument-serif",
+  weight: "400",
   style: ["normal", "italic"],
-  axes: ["opsz", "SOFT", "WONK"],
   display: "swap",
 });
 
@@ -82,7 +81,7 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={`scroll-smooth ${inter.variable} ${interTight.variable} ${fraunces.variable}`}
+      className={`scroll-smooth ${inter.variable} ${interTight.variable} ${instrumentSerif.variable}`}
     >
       <body className="font-sans antialiased">
         <LenisProvider>
