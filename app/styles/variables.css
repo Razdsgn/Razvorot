@@ -1,14 +1,12 @@
 /**
  * Design tokens — single source of truth.
  *
- * Palette direction: warm editorial "boutique studio" — cream paper,
- * near-black ink (not pure #000), one restrained clay/terracotta accent
- * used sparingly (small details, never large fills). Inspired by the
- * Clean / Portfolio / Design-Agency register of premium one-page
- * creative-studio sites (big serif display type, hairline rules,
- * generous whitespace) rather than a literal pixel copy — see the
- * project README / chat for why exact values can't be sampled 1:1
- * from a live site through a text-only fetch tool.
+ * Palette direction: dark editorial "boutique studio" — warm near-black
+ * background (not pure #000, keeps depth), warm off-white ink, one
+ * restrained brass/gold accent used sparingly (small details, never
+ * large fills). Same "Clean / Portfolio / Design-Agency" register as
+ * before, now in a dark register — this is a deliberate redesign, not
+ * a literal pixel copy of any single reference site.
  *
  * Consumed by: app/globals.css (@import) and tailwind.config.ts
  * (colors reference these vars, so there is exactly one place to
@@ -16,24 +14,24 @@
  */
 :root {
   /* Colors */
-  --background: #f4f1ea;
-  --surface: #ffffff;
-  --card: #ffffff;
-  --foreground: #14130e;
-  --muted: #7c776c;
-  --line: rgba(20, 19, 14, 0.1);
-  --accent: #c9542c;
-  --accent-soft: rgba(201, 84, 44, 0.14);
+  --background: #121110;
+  --surface: #1a1815;
+  --card: #1a1815;
+  --foreground: #f2efe9;
+  --muted: #948d80;
+  --line: rgba(242, 239, 233, 0.1);
+  --accent: #d9a24b;
+  --accent-soft: rgba(217, 162, 75, 0.16);
 
   /* RGB-channel triplets (no commas, no rgb()) of the colors above.
      Required so Tailwind's opacity modifiers work, e.g. `border-foreground/20`
      compiles to `rgb(var(--foreground-rgb) / 0.2)`. Keep every value here in
      sync with its hex counterpart above. */
-  --background-rgb: 244 241 234;
-  --card-rgb: 255 255 255;
-  --foreground-rgb: 20 19 14;
-  --muted-rgb: 124 119 108;
-  --accent-rgb: 201 84 44;
+  --background-rgb: 18 17 16;
+  --card-rgb: 26 24 21;
+  --foreground-rgb: 242 239 233;
+  --muted-rgb: 148 141 128;
+  --accent-rgb: 217 162 75;
 
   /* Radius — kept mostly sharp on purpose (editorial, not bubbly);
      pill buttons opt in explicitly via rounded-full in Tailwind */
