@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import Marquee from "@/components/Marquee";
 import SkillsAccordion from "@/components/SkillsAccordion";
+import Image from "next/image";
 
 function RotatingText({ items }: { items: string[] }) {
   const [index, setIndex] = useState(0);
@@ -101,6 +102,7 @@ const techStack = [
   "Stimulus",
 ];
 
+// ✅ Добавлены изображения для ВСЕХ проектов
 const projects = [
   {
     title: "Kvas & Cidre",
@@ -108,7 +110,7 @@ const projects = [
     description:
       "Application Symfony 7 / PHP 8.4 avec système multi-rôles, agendas récurrents RRule, calendrier interactif Stimulus/Hotwire, carte Leaflet/OSM, paiements, export CSV et emails automatisés.",
     tags: ["Symfony 7", "PHP 8.4", "Doctrine ORM", "RRule", "Leaflet"],
-    gradient: "from-[#08080b] via-[#1a1a2e] to-[#2d2b55]",
+    image: "/screenshots/hiking-club.png", // ваш реальный скриншот
   },
   {
     title: "Enchere",
@@ -116,7 +118,7 @@ const projects = [
     description:
       "Plateforme d'enchères full-stack avec logique métier Symfony, sécurité des accès, base MySQL optimisée et interface Twig moderne.",
     tags: ["Symfony", "PHP", "MySQL", "Twig"],
-    gradient: "from-[#13131a] via-[#33314f] to-[#63618f]",
+    image: "https://placehold.co/600x400/4c4f9e/white?text=Enchere+Project", // замените на свой скриншот
   },
   {
     title: "Symphony Peshpe",
@@ -124,7 +126,7 @@ const projects = [
     description:
       "Nouveau projet web en cours avec attention portée à la structure applicative, la qualité du code, les tests PHPUnit et une base solide.",
     tags: ["Symfony", "PHP", "PHPUnit", "TDD"],
-    gradient: "from-[#818cf8] via-[#4c4f9e] to-[#08080b]",
+    image: "https://placehold.co/600x400/818cf8/white?text=Symphony+Peshpe", // замените на свой скриншот
   },
 ];
 
@@ -196,6 +198,7 @@ const educations = [
   { period: "2008 — 2013", title: "Études techniques", school: "Université Technique de Biélorussie" },
 ];
 
+// 🔄 Обновлённый ProjectCard с изображением
 const ProjectCard = memo(function ProjectCard({
   project,
   index,
@@ -214,7 +217,19 @@ const ProjectCard = memo(function ProjectCard({
       transition={{ duration: 0.5, delay: index * 0.1 }}
       className="project-card group block"
     >
-      <div className={`relative aspect-[4/3] overflow-hidden bg-gradient-to-br ${project.gradient}`}>
+      <div className="relative aspect-[4/3] overflow-hidden bg-background">
+        {/* Изображение проекта */}
+        <Image
+          src={project.image}
+          alt={project.title}
+          fill
+          className="project-card-image object-cover"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 25vw"
+        />
+        {/* Затемнение для читаемости текста */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-80 transition-opacity group-hover:opacity-90" />
+        
+        {/* Текст и номер */}
         <div className="absolute inset-0 flex flex-col justify-between p-8">
           <div className="flex items-start justify-between">
             <span className="font-heading text-lg text-white/50">
@@ -226,11 +241,12 @@ const ProjectCard = memo(function ProjectCard({
             />
           </div>
           <div>
-            <h3 className="font-heading text-2xl font-semibold text-white md:text-3xl">{project.title}</h3>
-            <p className="mt-1 font-sans text-sm text-white/70">{project.subtitle}</p>
+            <h3 className="font-heading text-2xl font-semibold text-white md:text-3xl">
+              {project.title}
+            </h3>
+            <p className="mt-1 font-sans text-sm text-white/80">{project.subtitle}</p>
           </div>
         </div>
-        <div className="absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/20" />
       </div>
     </motion.a>
   );
