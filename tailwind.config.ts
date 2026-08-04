@@ -19,31 +19,31 @@ const config: Config = {
         primary: "rgb(var(--foreground-rgb) / <alpha-value>)",
         secondary: "rgb(var(--accent-rgb) / <alpha-value>)",
         accent: "rgb(var(--accent-rgb) / <alpha-value>)",
+        "accent-light": "var(--accent-light)",
         muted: "rgb(var(--muted-rgb) / <alpha-value>)",
         border: "var(--line)",
         card: "rgb(var(--card-rgb) / <alpha-value>)",
       },
       fontFamily: {
-        // Instrument Serif (thin, high-contrast, dramatic italic) carries
-        // every heading/number on the site — reads far more editorial on
-        // a dark background than a heavier text serif would. Inter stays
-        // for body copy, labels and UI chrome.
-        heading: ["var(--font-instrument-serif)", "Instrument Serif", "serif"],
+        // Space Grotesk (bold, geometric, variable) carries every
+        // heading/number on the site — matches the approved "Techno
+        // Indigo" preview. Inter stays for body copy, labels and UI chrome.
+        heading: ["var(--font-space-grotesk)", "Space Grotesk", "sans-serif"],
         sans: ["var(--font-inter)", "Inter", "sans-serif"],
         body: ["var(--font-inter)", "Inter", "sans-serif"],
       },
       fontSize: {
         hero: [
           "clamp(3.5rem,11vw,9.5rem)",
-          { lineHeight: "0.95", fontWeight: "400", letterSpacing: "-0.02em" },
+          { lineHeight: "0.95", fontWeight: "700", letterSpacing: "-0.03em" },
         ],
         section: [
           "clamp(3rem,8vw,7rem)",
-          { lineHeight: "1.05", fontWeight: "400", letterSpacing: "-0.01em" },
+          { lineHeight: "1.05", fontWeight: "700", letterSpacing: "-0.02em" },
         ],
         "stat-lg": [
           "clamp(2.75rem,5.5vw,4.5rem)",
-          { lineHeight: "1.1", fontWeight: "400", letterSpacing: "-0.01em" },
+          { lineHeight: "1.1", fontWeight: "700", letterSpacing: "-0.02em" },
         ],
       },
       spacing: {
