@@ -1,12 +1,11 @@
 /**
  * Design tokens — single source of truth.
  *
- * Palette direction: dark editorial "boutique studio" — warm near-black
- * background (not pure #000, keeps depth), warm off-white ink, one
- * restrained brass/gold accent used sparingly (small details, never
- * large fills). Same "Clean / Portfolio / Design-Agency" register as
- * before, now in a dark register — this is a deliberate redesign, not
- * a literal pixel copy of any single reference site.
+ * Palette direction: "Techno Indigo" — deep near-black background with
+ * an electric indigo accent, used with real glow (box-shadow/blur),
+ * not just a flat color swap. Picked by the user from three live HTML
+ * previews (Techno Indigo / Terminal Green / Brutalist B&W) — this is
+ * the approved direction, not a guess.
  *
  * Consumed by: app/globals.css (@import) and tailwind.config.ts
  * (colors reference these vars, so there is exactly one place to
@@ -14,24 +13,25 @@
  */
 :root {
   /* Colors */
-  --background: #121110;
-  --surface: #1a1815;
-  --card: #1a1815;
-  --foreground: #f2efe9;
-  --muted: #948d80;
-  --line: rgba(242, 239, 233, 0.1);
-  --accent: #d9a24b;
-  --accent-soft: rgba(217, 162, 75, 0.16);
+  --background: #08080b;
+  --surface: #131318;
+  --card: #131318;
+  --foreground: #ececef;
+  --muted: #8f8f9c;
+  --line: rgba(236, 236, 239, 0.1);
+  --accent: #818cf8;
+  --accent-light: #c7d2fe;
+  --accent-soft: rgba(129, 140, 248, 0.16);
 
   /* RGB-channel triplets (no commas, no rgb()) of the colors above.
      Required so Tailwind's opacity modifiers work, e.g. `border-foreground/20`
      compiles to `rgb(var(--foreground-rgb) / 0.2)`. Keep every value here in
      sync with its hex counterpart above. */
-  --background-rgb: 18 17 16;
-  --card-rgb: 26 24 21;
-  --foreground-rgb: 242 239 233;
-  --muted-rgb: 148 141 128;
-  --accent-rgb: 217 162 75;
+  --background-rgb: 8 8 11;
+  --card-rgb: 19 19 24;
+  --foreground-rgb: 236 236 239;
+  --muted-rgb: 143 143 156;
+  --accent-rgb: 129 140 248;
 
   /* Radius — kept mostly sharp on purpose (editorial, not bubbly);
      pill buttons opt in explicitly via rounded-full in Tailwind */
