@@ -255,7 +255,7 @@ export default function Home() {
   ];
 
   return (
-    <main className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
+    <main className="relative min-h-screen overflow-x-hidden text-foreground">
       {/* HERO */}
       <section ref={heroRef} className="relative flex min-h-screen flex-col items-center justify-center px-[2%] pt-[100px]">
         <div className="hero-gradient pointer-events-none absolute inset-0" aria-hidden />

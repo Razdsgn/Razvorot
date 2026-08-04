@@ -83,6 +83,12 @@ export default function RootLayout({
       className={`scroll-smooth ${inter.variable} ${interTight.variable} ${spaceGrotesk.variable}`}
     >
       <body className="font-sans antialiased">
+        <div className="site-bg" aria-hidden="true">
+          <div className="site-bg-grid" />
+          <div className="site-bg-blob site-bg-blob-1" />
+          <div className="site-bg-blob site-bg-blob-2" />
+          <div className="site-bg-blob site-bg-blob-3" />
+        </div>
         <LenisProvider>
           <Navbar />
           {children}

@@ -10,13 +10,14 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply text-foreground font-sans antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
     cursor: none;
   }
 
   html {
     scroll-behavior: auto;
+    background-color: var(--background);
   }
 
   ::-webkit-scrollbar {
@@ -140,13 +141,14 @@
   }
 }
 
-/* Custom cursor — kept as-is per user request */
+/* Custom cursor — recolored for the dark theme (off-white dot + ring,
+   indigo glow on hover) so it's actually visible; shape/behavior untouched */
 .cursor-dot {
   pointer-events: none;
   position: fixed;
   width: 8px;
   height: 8px;
-  background: #000000;
+  background: var(--foreground);
   border-radius: 50%;
   z-index: 9999;
   will-change: transform;
@@ -157,18 +159,117 @@
   position: fixed;
   width: 40px;
   height: 40px;
-  border: 1.5px solid rgba(0, 0, 0, 0.25);
+  border: 1.5px solid rgba(236, 236, 239, 0.3);
   border-radius: 50%;
   z-index: 9998;
   will-change: transform;
-  transition: width 0.25s ease, height 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+  transition: width 0.25s ease, height 0.25s ease, border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
 }
 
 .cursor-ring.hover {
   width: 70px;
   height: 70px;
-  border-color: rgba(213, 247, 76, 0.8);
-  background: rgba(213, 247, 76, 0.15);
+  border-color: rgba(129, 140, 248, 0.8);
+  background: rgba(129, 140, 248, 0.15);
+  box-shadow: 0 0 24px rgba(129, 140, 248, 0.35);
+}
+
+/* Site-wide living background: a faint technical grid plus slow,
+   colour-shifting blurred blobs drifting behind it. Fixed to the
+   viewport so it stays alive while the page scrolls (Lenis here
+   smooths native scroll, no transform wrapper, so `fixed` behaves
+   normally). Body/main/html are transparent above it on purpose —
+   see the .site-bg rules and the `bg-background` removal on body/main. */
+.site-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background-color: var(--background);
+}
+
+.site-bg-grid {
+  position: absolute;
+  inset: -1px;
+  background-image: linear-gradient(rgba(129, 140, 248, 0.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(129, 140, 248, 0.09) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 85% 65% at 50% 25%, black 35%, transparent 90%);
+  -webkit-mask-image: radial-gradient(ellipse 85% 65% at 50% 25%, black 35%, transparent 90%);
+}
+
+.site-bg-blob {
+  position: absolute;
+  width: 46vw;
+  height: 46vw;
+  max-width: 620px;
+  max-height: 620px;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.32;
+  will-change: transform, filter;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.site-bg-blob-1 {
+  top: -12%;
+  left: -12%;
+  background: #6366f1;
+  animation-name: driftA;
+  animation-duration: 22s;
+}
+
+.site-bg-blob-2 {
+  top: 25%;
+  right: -16%;
+  background: #818cf8;
+  animation-name: driftB;
+  animation-duration: 27s;
+}
+
+.site-bg-blob-3 {
+  bottom: -18%;
+  left: 22%;
+  background: #a78bfa;
+  animation-name: driftC;
+  animation-duration: 31s;
+}
+
+@keyframes driftA {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    filter: blur(100px) hue-rotate(0deg);
+  }
+  50% {
+    transform: translate(6vw, 8vh) scale(1.15);
+    filter: blur(100px) hue-rotate(20deg);
+  }
+}
+
+@keyframes driftB {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    filter: blur(100px) hue-rotate(0deg);
+  }
+  50% {
+    transform: translate(-7vw, 6vh) scale(1.1);
+    filter: blur(100px) hue-rotate(-20deg);
+  }
+}
+
+@keyframes driftC {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    filter: blur(100px) hue-rotate(0deg);
+  }
+  50% {
+    transform: translate(5vw, -7vh) scale(1.2);
+    filter: blur(100px) hue-rotate(15deg);
+  }
 }
 
 .hero-gradient {
