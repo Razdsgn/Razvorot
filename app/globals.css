@@ -28,7 +28,7 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: rgba(242, 239, 233, 0.2);
+    background: rgba(236, 236, 239, 0.2);
     border-radius: 6px;
   }
 
@@ -42,7 +42,7 @@
   /* Sticky header surface — dark glass, with a hairline rule instead of
      a heavy drop shadow (flatter, editorial) */
   .glass-header {
-    background-color: rgba(18, 17, 16, 0.82);
+    background-color: rgba(8, 8, 11, 0.82);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--line);
@@ -67,15 +67,17 @@
     @apply font-heading text-section tracking-tight text-foreground;
   }
 
-  /* Primary CTA — solid ink fill, not the accent colour. On a premium
-     editorial site the accent stays a small detail; large fills stay
-     monochrome so the terracotta keeps its impact. */
+  /* Primary CTA — accent-filled with a real glow, not just a color swap.
+     This is the "Techno Indigo" direction the user picked from the live
+     previews: the accent is loud on the primary action, not just a detail. */
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-full bg-foreground px-11 py-4 font-sans text-base font-semibold text-background transition-all duration-300;
+    @apply inline-flex items-center justify-center rounded-full bg-accent px-11 py-4 font-sans text-base font-semibold text-background transition-all duration-300;
+    box-shadow: 0 0 0 rgba(129, 140, 248, 0);
   }
 
   .btn-primary:hover {
-    @apply bg-accent text-background;
+    box-shadow: 0 0 28px rgba(129, 140, 248, 0.55);
+    transform: translateY(-1px);
   }
 
   .btn-outline {
@@ -83,15 +85,16 @@
   }
 
   .btn-outline:hover {
-    @apply border-foreground bg-foreground text-background;
+    @apply border-accent text-accent;
   }
 
   .project-card {
-    @apply relative overflow-hidden rounded-none bg-card transition-transform duration-500;
+    @apply relative overflow-hidden rounded-none bg-card transition-all duration-500;
   }
 
   .project-card:hover {
     transform: scale(0.98);
+    box-shadow: 0 0 32px rgba(129, 140, 248, 0.2);
   }
 
   .project-card-image {
@@ -111,7 +114,7 @@
   }
 
   .accordion-trigger {
-    @apply flex w-full items-center justify-between py-6 text-left font-heading text-xl md:text-2xl;
+    @apply flex w-full items-center justify-between py-6 text-left font-heading text-xl transition-colors duration-300 hover:text-accent md:text-2xl;
   }
 
   .accordion-content {
@@ -169,7 +172,25 @@
 }
 
 .hero-gradient {
-  background: radial-gradient(ellipse at 50% 0%, rgba(217, 162, 75, 0.1) 0%, transparent 70%);
+  background: radial-gradient(ellipse 900px 500px at 50% -10%, rgba(129, 140, 248, 0.35), transparent 60%);
+  animation: heroGlow 6s ease-in-out infinite;
+}
+
+@keyframes heroGlow {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.gradient-text {
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .scroll-indicator {

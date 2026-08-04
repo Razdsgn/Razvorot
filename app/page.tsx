@@ -34,7 +34,7 @@ function RotatingText({ items }: { items: string[] }) {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -20, opacity: 0 }}
           transition={{ duration: 0.35 }}
-          className="absolute inset-0 font-heading italic text-lg text-muted md:text-xl"
+          className="absolute inset-0 font-heading font-medium text-lg text-muted md:text-xl"
         >
           {items[index]}
         </motion.span>
@@ -108,7 +108,7 @@ const projects = [
     description:
       "Application Symfony 7 / PHP 8.4 avec système multi-rôles, agendas récurrents RRule, calendrier interactif Stimulus/Hotwire, carte Leaflet/OSM, paiements, export CSV et emails automatisés.",
     tags: ["Symfony 7", "PHP 8.4", "Doctrine ORM", "RRule", "Leaflet"],
-    gradient: "from-[#14130e] via-[#2a2620] to-[#4a4136]",
+    gradient: "from-[#08080b] via-[#1a1a2e] to-[#2d2b55]",
   },
   {
     title: "Enchere",
@@ -116,7 +116,7 @@ const projects = [
     description:
       "Plateforme d'enchères full-stack avec logique métier Symfony, sécurité des accès, base MySQL optimisée et interface Twig moderne.",
     tags: ["Symfony", "PHP", "MySQL", "Twig"],
-    gradient: "from-[#2a2620] via-[#5c5346] to-[#8f8574]",
+    gradient: "from-[#13131a] via-[#33314f] to-[#63618f]",
   },
   {
     title: "Symphony Peshpe",
@@ -124,7 +124,7 @@ const projects = [
     description:
       "Nouveau projet web en cours avec attention portée à la structure applicative, la qualité du code, les tests PHPUnit et une base solide.",
     tags: ["Symfony", "PHP", "PHPUnit", "TDD"],
-    gradient: "from-[#d9a24b] via-[#a67a35] to-[#121110]",
+    gradient: "from-[#818cf8] via-[#4c4f9e] to-[#08080b]",
   },
 ];
 
@@ -217,7 +217,7 @@ const ProjectCard = memo(function ProjectCard({
       <div className={`relative aspect-[4/3] overflow-hidden bg-gradient-to-br ${project.gradient}`}>
         <div className="absolute inset-0 flex flex-col justify-between p-8">
           <div className="flex items-start justify-between">
-            <span className="font-heading italic text-lg text-white/50">
+            <span className="font-heading text-lg text-white/50">
               {String(index + 1).padStart(2, "0")}
             </span>
             <ArrowRight
@@ -226,7 +226,7 @@ const ProjectCard = memo(function ProjectCard({
             />
           </div>
           <div>
-            <h3 className="font-heading text-2xl text-white md:text-3xl">{project.title}</h3>
+            <h3 className="font-heading text-2xl font-semibold text-white md:text-3xl">{project.title}</h3>
             <p className="mt-1 font-sans text-sm text-white/70">{project.subtitle}</p>
           </div>
         </div>
@@ -286,9 +286,9 @@ export default function Home() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="mb-8 inline-flex items-center gap-2 rounded-full border border-foreground/15 px-5 py-2 font-sans text-xs font-semibold uppercase tracking-[0.14em] text-muted"
+              className="mb-8 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/[0.08] px-5 py-2 font-sans text-xs font-semibold uppercase tracking-[0.14em] text-accent-light"
             >
-              <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+              <span className="h-1.5 w-1.5 rounded-full bg-accent shadow-[0_0_8px_var(--accent)]" />
               Ouvert à l&apos;alternance — dès octobre 2026
             </motion.div>
 
@@ -300,7 +300,7 @@ export default function Home() {
             >
               Raman
               <br />
-              <span className="italic text-accent">Khaniakou</span>
+              <span className="gradient-text">Khaniakou</span>
             </motion.h1>
 
             <motion.div
@@ -393,7 +393,7 @@ export default function Home() {
               >
                 <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                   <div className="max-w-2xl">
-                    <h3 className="font-heading text-2xl">{project.title}</h3>
+                    <h3 className="font-heading text-2xl font-semibold">{project.title}</h3>
                     <p className="mt-1 font-sans text-sm font-semibold text-muted">{project.subtitle}</p>
                     <p className="mt-4 font-sans text-sm leading-relaxed text-muted">{project.description}</p>
                   </div>
@@ -474,10 +474,10 @@ export default function Home() {
                     className="border-t border-foreground/10 py-8"
                   >
                     <div className="flex items-start gap-6">
-                      <span className="font-heading italic text-4xl text-accent/30">{exp.step}</span>
+                      <span className="font-heading text-4xl text-accent/30">{exp.step}</span>
                       <div>
                         <p className="font-sans text-sm text-muted">{exp.period}</p>
-                        <h4 className="mt-1 font-heading text-xl">{exp.title}</h4>
+                        <h4 className="mt-1 font-heading text-xl font-semibold">{exp.title}</h4>
                         <p className="mt-1 font-sans text-sm font-semibold text-foreground">{exp.company}</p>
                         <p className="mt-3 font-sans text-sm leading-relaxed text-muted">{exp.description}</p>
                       </div>
@@ -500,7 +500,7 @@ export default function Home() {
                     className="border-t border-foreground/10 py-8"
                   >
                     <p className="font-sans text-sm text-muted">{edu.period}</p>
-                    <h4 className="mt-1 font-heading text-xl">{edu.title}</h4>
+                    <h4 className="mt-1 font-heading text-xl font-semibold">{edu.title}</h4>
                     <p className="mt-1 font-sans text-sm text-muted">{edu.school}</p>
                   </motion.div>
                 ))}
@@ -641,7 +641,7 @@ export default function Home() {
                     fill="currentColor"
                   />
                 </svg>
-                <span className="font-heading text-lg">Raman Khaniakou</span>
+                <span className="font-heading text-lg font-semibold">Raman Khaniakou</span>
               </div>
               <p className="font-sans text-sm text-muted">
                 Développeur Web Full-Stack · Rennes, France

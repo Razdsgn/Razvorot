@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Inter_Tight, Instrument_Serif } from "next/font/google";
+import { Inter, Inter_Tight, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 
 import Navbar from "@/components/layout/Navbar";
@@ -20,11 +20,10 @@ const interTight = Inter_Tight({
   display: "swap",
 });
 
-const instrumentSerif = Instrument_Serif({
+const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
-  variable: "--font-instrument-serif",
-  weight: "400",
-  style: ["normal", "italic"],
+  variable: "--font-space-grotesk",
+  weight: "variable",
   display: "swap",
 });
 
@@ -81,7 +80,7 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={`scroll-smooth ${inter.variable} ${interTight.variable} ${instrumentSerif.variable}`}
+      className={`scroll-smooth ${inter.variable} ${interTight.variable} ${spaceGrotesk.variable}`}
     >
       <body className="font-sans antialiased">
         <LenisProvider>
