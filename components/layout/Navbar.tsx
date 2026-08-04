@@ -127,7 +127,7 @@ const Navbar = memo(function Navbar() {
                     <a
                       href={item.href}
                       onClick={() => setIsOpen(false)}
-                      className="font-heading text-4xl text-foreground"
+                      className="font-heading text-4xl font-semibold text-foreground"
                     >
                       {item.label}
                     </a>
