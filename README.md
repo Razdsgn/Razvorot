@@ -1,48 +1,53 @@
-# Raman Khaniakou — Portfolio
+<h1 align="center">🌟 Razvorot</h1>
 
-Personal portfolio / CV site for Raman Khaniakou, full-stack web developer (Symfony /
-PHP) based in Rennes, France. Built with Next.js, TypeScript, Tailwind CSS and Framer
-Motion.
+<p align="center">
+  <a href="https://razvorot8.netlify.app/" target="_blank">
+    <img src="https://img.shields.io/badge/Смотреть_Live-Netlify-00C7B7?style=for-the-badge&logo=netlify" alt="Live Demo">
+  </a>
+  <a href="https://github.com/Razdsgn/Razvorot/stargazers">
+    <img src="https://img.shields.io/github/stars/Razdsgn/Razvorot?style=for-the-badge&color=FFD700" alt="Stars">
+  </a>
+</p>
 
-**Live:** https://romankhonyakov.netlify.app/
+<p align="center">
+  <em>Современный веб-проект, созданный с вниманием к деталям, дизайну и пользовательскому опыту.</em>
+</p>
 
-## Design
+---
 
-The design system is inspired by [cuberto.com](https://cuberto.com): a stark white
-canvas with near-black ink, a single muted grey, one sparing accent color, huge kinetic
-typography, a morphing cursor, magnetic buttons, and a near-black rounded "panel" that
-the page scrolls into for the final call-to-action and footer.
+## 🚀 О проекте
 
-See `FEATURES.md` for the full breakdown of sections and interactions.
+**Razvorot** — это [вставьте пару слов о проекте, например: креативное портфолио / стильный лендинг / веб-приложение]. Проект ориентирован на визуальную эстетику, высокую производительность и плавные анимации. 
 
-## Getting started
+🔗 **Живая версия:** [razvorot8.netlify.app](https://razvorot8.netlify.app/)
 
-```bash
-npm install
-npm run dev
-```
+## 📸 Превью
 
-Open http://localhost:3000.
+<p align="center">
+  <!-- Замените ссылку ниже на прямой URL реального скриншота вашего сайта (можно загрузить картинку прямо в GitHub issues/repo и вставить ссылку сюда) -->
+  <img src="https://via.placeholder.com/1000x500.png?text=Добавьте+скриншот+вашего+сайта+сюда" alt="Razvorot Preview" width="100%">
+</p>
 
-## Editing content
+## ✨ Ключевые особенности
 
-All copy (bio, roles, tech stack, projects, experience, education, FAQ, contact info)
-lives in one file: [`lib/content.ts`](./lib/content.ts). See `QUICK_START.md` for a
-guided tour.
+*   📱 **Полная адаптивность:** Отличный вид на мобильных устройствах, планшетах и десктопах.
+*   ⚡ **Производительность:** Быстрая загрузка и оптимизация ресурсов.
+*   🎨 **Современный UI/UX:** Продуманный интерфейс, типографика и приятные микроваимодействия.
+*   🛠️ **Чистый код:** Понятная структура, которую легко масштабировать и поддерживать.
 
-## Scripts
+## 🛠️ Технологический стек
 
-```bash
-npm run dev     # start the dev server
-npm run build   # production build
-npm start       # serve the production build
-npm run lint    # lint the codebase
-```
+| Технология | Назначение |
+| :--- | :--- |
+| 🌐 **HTML5 / CSS3** | Базовая семантическая разметка и стилизация |
+| 💛 **JavaScript (ES6+)** | Интерактивность и логика интерфейса |
+| ⚛️ **[Ваш Фреймворк]** | *(Например: React, Vue или Gulp/SCSS — впишите нужное)* |
+| 🚀 **Netlify** | Автоматический деплой и хостинг |
 
-## Stack
+## ⚙️ Быстрый старт
 
-- [Next.js 15](https://nextjs.org/) (App Router) + React 18 + TypeScript
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Framer Motion](https://www.framer.com/motion/)
-- [Lenis](https://github.com/darkroomengineering/lenis) for smooth scrolling
-- [lucide-react](https://lucide.dev/) icons
+Чтобы запустить проект локально на вашем компьютере, выполните следующие шаги:
+
+1. **Клонируйте репозиторий:**
+   ```bash
+   git clone [https://github.com/Razdsgn/Razvorot.git](https://github.com/Razdsgn/Razvorot.git)
