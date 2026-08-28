@@ -1,29 +1,16 @@
 import type { Metadata } from "next";
-import { Inter, Inter_Tight, Space_Grotesk } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
-import DynamicBackground from "@/components/ui/DynamicBackground";
 import Navbar from "@/components/layout/Navbar";
 import LenisProvider from "@/components/providers/lenis-provider";
 import CustomCursor from "@/components/ui/Cursor";
+import Preloader from "@/components/ui/Preloader";
+import ContactBadge from "@/components/ui/ContactBadge";
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
-
-const interTight = Inter_Tight({
-  subsets: ["latin"],
-  variable: "--font-inter-tight",
   weight: ["400", "500", "600", "700", "800"],
-  display: "swap",
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-space-grotesk",
-  weight: "variable",
   display: "swap",
 });
 
@@ -78,15 +65,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="fr"
-      className={`scroll-smooth ${inter.variable} ${interTight.variable} ${spaceGrotesk.variable}`}
-    >
-      <body className="font-sans antialiased">
-        <DynamicBackground />
+    <html lang="fr" className={`scroll-smooth ${inter.variable}`}>
+      <body className="bg-background font-sans antialiased">
+        <Preloader />
+        <div className="grain-overlay" aria-hidden />
         <LenisProvider>
           <Navbar />
           {children}
+          <ContactBadge />
           <CustomCursor />
         </LenisProvider>
       </body>

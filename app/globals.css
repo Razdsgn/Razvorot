@@ -10,7 +10,7 @@
   }
 
   body {
-    @apply text-foreground font-sans antialiased;
+    @apply bg-background text-ink font-sans antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
     cursor: none;
   }
@@ -29,269 +29,166 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: rgba(236, 236, 239, 0.2);
+    background: rgba(11, 11, 12, 0.2);
     border-radius: 6px;
   }
 
   ::selection {
-    background-color: var(--accent-soft);
-    color: var(--foreground);
+    background-color: var(--accent);
+    color: var(--accent-ink);
   }
 }
 
 @layer components {
-  /* Sticky header surface — dark glass, with a hairline rule instead of
-     a heavy drop shadow (flatter, editorial) */
-  .glass-header {
-    background-color: rgba(8, 8, 11, 0.82);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--line);
-  }
-
   /* Small uppercase tracked eyebrow used above every section title —
-     the "Mes Réalisations" / "Ce que je propose" style label */
-  .section-label {
-    @apply inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-[0.16em] text-muted;
+     the "What we do" / "Selected work" style label. */
+  .eyebrow {
+    @apply inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-[0.18em] text-muted;
   }
 
-  .section-label::before {
+  .eyebrow::before {
     content: "";
     display: inline-block;
     width: 6px;
     height: 6px;
     border-radius: 999px;
+    background: var(--ink);
+  }
+
+  .eyebrow-invert {
+    @apply text-panel-muted;
+  }
+
+  .eyebrow-invert::before {
     background: var(--accent);
   }
 
-  .section-title {
-    @apply font-heading text-section tracking-tight text-foreground;
-  }
-
-  /* Primary CTA — accent-filled with a real glow, not just a color swap.
-     This is the "Techno Indigo" direction the user picked from the live
-     previews: the accent is loud on the primary action, not just a detail. */
+  /* Pill buttons — flat, no shadows; ink-on-white by default so the
+     accent stays rare (cursor, badge, focus states only). */
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-full bg-accent px-11 py-4 font-sans text-base font-semibold text-background transition-all duration-300;
-    box-shadow: 0 0 0 rgba(129, 140, 248, 0);
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-ink px-10 py-4 font-sans text-[15px] font-semibold text-background transition-transform duration-300;
   }
 
   .btn-primary:hover {
-    box-shadow: 0 0 28px rgba(129, 140, 248, 0.55);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
   }
 
   .btn-outline {
-    @apply inline-flex items-center justify-center rounded-full border border-foreground/20 bg-transparent px-11 py-4 font-sans text-base font-semibold text-foreground transition-all duration-300;
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-ink/20 bg-transparent px-10 py-4 font-sans text-[15px] font-semibold text-ink transition-colors duration-300;
   }
 
   .btn-outline:hover {
-    @apply border-accent text-accent;
+    @apply border-ink bg-ink text-background;
   }
 
-  .project-card {
-    @apply relative overflow-hidden rounded-none bg-card transition-all duration-500;
+  .btn-panel {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-accent px-10 py-4 font-sans text-[15px] font-semibold text-accent-ink transition-transform duration-300;
   }
 
-  .project-card:hover {
-    transform: scale(0.98);
-    box-shadow: 0 0 32px rgba(129, 140, 248, 0.2);
+  .btn-panel:hover {
+    transform: translateY(-2px);
   }
 
-  .project-card-image {
-    @apply aspect-[4/3] w-full object-cover transition-transform duration-700;
+  .tag-pill {
+    @apply rounded-full border border-ink/10 px-4 py-1.5 font-sans text-xs font-semibold text-ink/70;
   }
 
-  .project-card:hover .project-card-image {
-    transform: scale(1.05);
-  }
-
-  .stat-card {
-    @apply flex flex-col gap-4 border-t border-foreground/10 pt-8;
-  }
-
-  .accordion-item {
-    @apply border-b border-foreground/10;
-  }
-
-  .accordion-trigger {
-    @apply flex w-full items-center justify-between py-6 text-left font-heading text-xl transition-colors duration-300 hover:text-accent md:text-2xl;
-  }
-
-  .accordion-content {
-    @apply overflow-hidden pb-6 text-muted;
-  }
-
-  .form-input {
-    @apply w-full border-0 border-b border-foreground/20 bg-transparent py-4 font-sans text-base text-foreground placeholder:text-muted/60 focus:border-accent focus:outline-none;
-  }
-
-  .form-label {
-    @apply mb-2 block font-sans text-sm font-semibold text-foreground;
+  .form-field-invert {
+    @apply w-full border-0 border-b border-panel-ink/25 bg-transparent py-4 font-sans text-base text-panel-ink placeholder:text-panel-muted focus:border-accent focus:outline-none;
   }
 
   .marquee-track {
     display: flex;
     width: max-content;
-    animation: marquee 35s linear infinite;
+    align-items: center;
   }
 
   .marquee-track:hover {
     animation-play-state: paused;
   }
+
+  /* Hover-drawn underline for big, standalone links (the CTA email). */
+  .underline-draw {
+    position: relative;
+    display: inline-block;
+  }
+
+  .underline-draw::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0.06em;
+    width: 100%;
+    height: clamp(2px, 0.3vw, 5px);
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.6s var(--ease-out);
+  }
+
+  .underline-draw:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
 }
 
-/* Custom cursor — recolored for the dark theme (off-white dot + ring,
-   indigo glow on hover) so it's actually visible; shape/behavior untouched */
-.cursor-dot {
+/* Custom cursor — a single circle that relies on mix-blend-mode:difference
+   so it reads correctly over the white canvas, the dark panel and photos
+   alike without any section-aware color logic. Grows + shows a label when
+   hovering anything carrying a `data-cursor` attribute. */
+.cursor-wrap {
   pointer-events: none;
   position: fixed;
-  width: 8px;
-  height: 8px;
-  background: var(--foreground);
+  z-index: 100;
+}
+
+.cursor-blob {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  z-index: 9999;
-  will-change: transform;
+  background: #fff;
+  mix-blend-mode: difference;
+  transform: translate(-50%, -50%);
+  transition: width 0.35s var(--ease-out), height 0.35s var(--ease-out);
 }
 
-.cursor-ring {
-  pointer-events: none;
-  position: fixed;
-  width: 40px;
-  height: 40px;
-  border: 1.5px solid rgba(236, 236, 239, 0.3);
-  border-radius: 50%;
-  z-index: 9998;
-  will-change: transform;
-  transition: width 0.25s ease, height 0.25s ease, border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+.cursor-blob.is-active {
+  width: 104px;
+  height: 104px;
 }
 
-.cursor-ring.hover {
-  width: 70px;
-  height: 70px;
-  border-color: rgba(129, 140, 248, 0.8);
-  background: rgba(129, 140, 248, 0.15);
-  box-shadow: 0 0 24px rgba(129, 140, 248, 0.35);
+.cursor-label {
+  position: absolute;
+  color: #fff;
+  mix-blend-mode: difference;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.25s ease;
 }
 
-/* Site-wide living background: a faint technical grid plus slow,
-   colour-shifting blurred blobs drifting behind it. Fixed to the
-   viewport so it stays alive while the page scrolls (Lenis here
-   smooths native scroll, no transform wrapper, so `fixed` behaves
-   normally). Body/main/html are transparent above it on purpose —
-   see the .site-bg rules and the `bg-background` removal on body/main. */
-.site-bg {
+.cursor-blob.is-active .cursor-label {
+  opacity: 1;
+}
+
+/* Faint grain — the only "texture" on an otherwise flat, shadow-free
+   canvas. Fixed to the viewport, extremely low opacity. */
+.grain-overlay {
   position: fixed;
   inset: 0;
-  z-index: -1;
-  overflow: hidden;
-  background-color: var(--background);
-}
-
-.site-bg-grid {
-  position: absolute;
-  inset: -1px;
-  background-image: linear-gradient(rgba(129, 140, 248, 0.09) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(129, 140, 248, 0.09) 1px, transparent 1px);
-  background-size: 56px 56px;
-  mask-image: radial-gradient(ellipse 85% 65% at 50% 25%, black 35%, transparent 90%);
-  -webkit-mask-image: radial-gradient(ellipse 85% 65% at 50% 25%, black 35%, transparent 90%);
-}
-
-.site-bg-blob {
-  position: absolute;
-  width: 46vw;
-  height: 46vw;
-  max-width: 620px;
-  max-height: 620px;
-  border-radius: 50%;
-  filter: blur(100px);
-  opacity: 0.32;
-  will-change: transform, filter;
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
-}
-
-.site-bg-blob-1 {
-  top: -12%;
-  left: -12%;
-  background: #6366f1;
-  animation-name: driftA;
-  animation-duration: 22s;
-}
-
-.site-bg-blob-2 {
-  top: 25%;
-  right: -16%;
-  background: #818cf8;
-  animation-name: driftB;
-  animation-duration: 27s;
-}
-
-.site-bg-blob-3 {
-  bottom: -18%;
-  left: 22%;
-  background: #a78bfa;
-  animation-name: driftC;
-  animation-duration: 31s;
-}
-
-@keyframes driftA {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-    filter: blur(100px) hue-rotate(0deg);
-  }
-  50% {
-    transform: translate(6vw, 8vh) scale(1.15);
-    filter: blur(100px) hue-rotate(20deg);
-  }
-}
-
-@keyframes driftB {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-    filter: blur(100px) hue-rotate(0deg);
-  }
-  50% {
-    transform: translate(-7vw, 6vh) scale(1.1);
-    filter: blur(100px) hue-rotate(-20deg);
-  }
-}
-
-@keyframes driftC {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-    filter: blur(100px) hue-rotate(0deg);
-  }
-  50% {
-    transform: translate(5vw, -7vh) scale(1.2);
-    filter: blur(100px) hue-rotate(15deg);
-  }
-}
-
-.hero-gradient {
-  background: radial-gradient(ellipse 900px 500px at 50% -10%, rgba(129, 140, 248, 0.35), transparent 60%);
-  animation: heroGlow 6s ease-in-out infinite;
-}
-
-@keyframes heroGlow {
-  0%,
-  100% {
-    opacity: 0.7;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-.gradient-text {
-  background: linear-gradient(90deg, var(--accent), var(--accent-light));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0.025;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  background-size: 160px 160px;
 }
 
 .scroll-indicator {
@@ -308,17 +205,8 @@
   }
 }
 
-@keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--ink);
   outline-offset: 4px;
 }
 
@@ -327,8 +215,7 @@
     cursor: auto;
   }
 
-  .cursor-dot,
-  .cursor-ring {
+  .cursor-wrap {
     display: none;
   }
 }

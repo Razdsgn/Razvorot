@@ -1,11 +1,12 @@
 /**
  * Design tokens — single source of truth.
  *
- * Palette direction: "Techno Indigo" — deep near-black background with
- * an electric indigo accent, used with real glow (box-shadow/blur),
- * not just a flat color swap. Picked by the user from three live HTML
- * previews (Techno Indigo / Terminal Green / Brutalist B&W) — this is
- * the approved direction, not a guess.
+ * Direction: "Editorial Mono" — a Cuberto-style system. Pure white canvas,
+ * near-black ink, a single muted grey for secondary text, and a near-black
+ * "showcase" panel (rounded top corners) that the page scrolls into for the
+ * final CTA/footer. One accent (acid lime) is used sparingly — on the
+ * cursor, the floating contact badge and hover states — everything else
+ * stays monochrome so scale, motion and whitespace carry the design.
  *
  * Consumed by: app/globals.css (@import) and tailwind.config.ts
  * (colors reference these vars, so there is exactly one place to
@@ -13,31 +14,38 @@
  */
 :root {
   /* Colors */
-  --background: #08080b;
-  --surface: #131318;
-  --card: #131318;
-  --foreground: #ececef;
-  --muted: #8f8f9c;
-  --line: rgba(236, 236, 239, 0.1);
-  --accent: #818cf8;
-  --accent-light: #c7d2fe;
-  --accent-soft: rgba(129, 140, 248, 0.16);
+  --background: #ffffff;
+  --surface: #f4f4f1;
+  --ink: #0b0b0c;
+  --muted: #6d6d6d;
+  --line: rgba(11, 11, 12, 0.12);
+
+  --panel: #141414;
+  --panel-ink: #f4f4f1;
+  --panel-muted: #9a9a9a;
+  --panel-line: rgba(244, 244, 241, 0.14);
+
+  --accent: #d7ff3f;
+  --accent-ink: #0b0b0c;
 
   /* RGB-channel triplets (no commas, no rgb()) of the colors above.
-     Required so Tailwind's opacity modifiers work, e.g. `border-foreground/20`
-     compiles to `rgb(var(--foreground-rgb) / 0.2)`. Keep every value here in
+     Required so Tailwind's opacity modifiers work, e.g. `border-ink/20`
+     compiles to `rgb(var(--ink-rgb) / 0.2)`. Keep every value here in
      sync with its hex counterpart above. */
-  --background-rgb: 8 8 11;
-  --card-rgb: 19 19 24;
-  --foreground-rgb: 236 236 239;
-  --muted-rgb: 143 143 156;
-  --accent-rgb: 129 140 248;
+  --background-rgb: 255 255 255;
+  --surface-rgb: 244 244 241;
+  --ink-rgb: 11 11 12;
+  --muted-rgb: 109 109 109;
+  --panel-rgb: 20 20 20;
+  --panel-ink-rgb: 244 244 241;
+  --accent-rgb: 215 255 63;
 
-  /* Radius — kept mostly sharp on purpose (editorial, not bubbly);
+  /* Radius — generous and soft on media/cards, sharp elsewhere;
      pill buttons opt in explicitly via rounded-full in Tailwind */
-  --radius-sm: 6px;
-  --radius-md: 12px;
-  --radius-lg: 24px;
+  --radius-sm: 10px;
+  --radius-md: 22px;
+  --radius-lg: 32px;
+  --radius-panel: clamp(28px, 6vw, 64px);
 
   /* Spacing scale */
   --space-1: 8px;
@@ -49,10 +57,12 @@
   --space-7: 160px;
 
   /* Layout */
-  --container: 1400px;
+  --container: 1360px;
 
   /* Motion */
-  --transition-fast: 0.25s ease;
-  --transition-medium: 0.45s ease;
-  --transition-slow: 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --transition-fast: 0.25s var(--ease-out);
+  --transition-medium: 0.5s var(--ease-out);
+  --transition-slow: 0.9s var(--ease-out);
 }

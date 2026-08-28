@@ -26,47 +26,53 @@
 ```
 modern-portfolio/
 ├── app/
-│   ├── layout.tsx       ← SEO, metadata, root layout
-│   ├── page.tsx         ← Main page with all sections
-│   └── globals.css      ← Styles and animations
+│   ├── layout.tsx           ← SEO, metadata, root layout, Preloader/Cursor/Badge
+│   ├── page.tsx              ← Composes all sections (no content here)
+│   ├── globals.css           ← Component classes, cursor, grain, keyframes
+│   └── styles/variables.css  ← Color/spacing/radius design tokens
+├── lib/
+│   └── content.ts            ← ALL editable copy: bio, projects, experience, FAQ…
 ├── components/
-│   ├── navbar.tsx       ← Navigation with mobile menu
-│   └── lenis-provider.tsx ← Smooth scrolling
-├── public/              ← PUT YOUR IMAGES HERE
-├── package.json         ← Dependencies
-├── tailwind.config.ts   ← Theme colors
-├── tsconfig.json        ← TypeScript settings
-├── next.config.mjs      ← Next.js config
-├── postcss.config.js    ← PostCSS config
-├── setup.bat            ← Windows installer
-└── setup.sh             ← Mac/Linux installer
+│   ├── layout/Navbar.tsx     ← Header + full-screen mobile menu
+│   ├── sections/              ← Hero, Services, Projects, Stats, Experience, Faq, CtaPanel
+│   ├── ui/                    ← Cursor, Preloader, Magnetic, RevealText, ContactBadge, Accordion
+│   ├── Marquee.tsx            ← Tech-stack scrolling strip
+│   └── providers/lenis-provider.tsx ← Smooth scrolling
+├── public/screenshots/         ← PUT YOUR PROJECT IMAGES HERE
+├── package.json                ← Dependencies
+├── tailwind.config.ts          ← Type scale, colors (reads CSS variables)
+├── tsconfig.json                ← TypeScript settings
+├── next.config.mjs              ← Next.js config
+├── postcss.config.js            ← PostCSS config
+├── setup.bat                    ← Windows installer
+└── setup.sh                     ← Mac/Linux installer
 ```
 
 ## Customization Priority
 
+Almost everything below is a single export in **`lib/content.ts`** — no line numbers to
+hunt for.
+
 ### 1. MUST CHANGE (5 min)
-- [ ] Your name in `/app/page.tsx` line 200
-- [ ] Your email in `/app/page.tsx` line 550
-- [ ] Your location in `/app/page.tsx` line 205
+- [ ] `contactEmail`, `contactPhone`, `contactLocation`
+- [ ] `githubUrl`, `linkedinUrl`
 
 ### 2. IMPORTANT (10 min)
-- [ ] Job titles in `/app/page.tsx` line 32
-- [ ] Bio paragraph in `/app/page.tsx` line 270
-- [ ] Add 3+ projects in `/app/page.tsx` line 45
-- [ ] Social media links in `/app/page.tsx` line 570
+- [ ] `roles` (rotating job titles under the hero name)
+- [ ] `projects` (add/edit your real projects + screenshots)
+- [ ] `experiences` / `educations` / `languages`
 
 ### 3. RECOMMENDED (15 min)
-- [ ] Profile images (3 images)
-- [ ] Project images
-- [ ] Skills lists
-- [ ] Awards section
-- [ ] Contact phone number
+- [ ] `services` (the "what I do" cards)
+- [ ] `stats` / `whyPoints`
+- [ ] `faqItems`
+- [ ] Project screenshots in `public/screenshots/`
 
 ### 4. OPTIONAL (30+ min)
-- [ ] Colors in `tailwind.config.ts`
+- [ ] Colors in `app/styles/variables.css`
+- [ ] Type scale in `tailwind.config.ts`
 - [ ] SEO metadata in `/app/layout.tsx`
-- [ ] Animation speeds
-- [ ] Add new sections
+- [ ] Animation speeds/easing in `components/sections/*` and `components/ui/*`
 
 ## Deployment Options
 
@@ -147,38 +153,29 @@ pnpm install
 
 ## Adding Your Images
 
-### Option 1: Local Images (Recommended)
+Project screenshots are local-only by default (no external image host to configure).
 
-1. **Add images to `/public` folder**
+1. **Add the screenshot to `public/screenshots/`**
    ```
-   /public
-     ├── profile1.jpg
-     ├── profile2.jpg
-     ├── profile3.jpg
-     ├── project1.jpg
-     └── award1.jpg
+   public/screenshots/
+     └── my-project.png
    ```
 
-2. **Reference in code**
+2. **Reference it in `lib/content.ts`**
    ```typescript
-   images: [
-     "/profile1.jpg",
-     "/project1.jpg",
-   ]
+   {
+     title: "My Project",
+     image: "/screenshots/my-project.png",
+     // ...
+   }
    ```
 
-### Option 2: External URLs
+3. **No screenshot yet?** Set `image: null` and the project card automatically renders a
+   branded gradient placeholder with the project's initials instead of a broken image.
 
-Use any image hosting:
-- Unsplash: `https://images.unsplash.com/photo-...`
-- Cloudinary: `https://res.cloudinary.com/...`
-- ImgBB: Upload and get URL
-
-```typescript
-images: [
-  "https://images.unsplash.com/photo-123456",
-]
-```
+If you do want to pull images from a remote host (Unsplash, Cloudinary, etc.), add that
+host to `images.remotePatterns` in `next.config.mjs` first — Next.js blocks unconfigured
+remote image hosts by default.
 
 ## Connecting to Your GitHub Repo
 
@@ -187,7 +184,7 @@ images: [
 git init
 git add .
 git commit -m "Initial portfolio"
-git remote add origin https://github.com/Razdsgn/Cv.git
+git remote add origin https://github.com/Razdsgn/Razvorot.git
 git push -u origin main
 ```
 
