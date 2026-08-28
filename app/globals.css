@@ -132,14 +132,21 @@
   }
 }
 
-/* Custom cursor — a single circle that relies on mix-blend-mode:difference
-   so it reads correctly over the white canvas, the dark panel and photos
-   alike without any section-aware color logic. Grows + shows a label when
-   hovering anything carrying a `data-cursor` attribute. */
+/* Custom cursor — deliberately NOT blend-mode based (mix-blend-mode:
+   difference looks clever but silently breaks: it can invert dark text on
+   a light background back to a *light* pixel on that same light
+   background, i.e. the nav links it's hovering visually vanish). Instead
+   this uses a two-tone ring (ink border + a background-colored halo) so
+   at least one of the two tones always contrasts with whatever is
+   underneath. Position is written directly via transform in Cursor.tsx
+   (no spring/lag); only size/color morph on hover via this transition. */
 .cursor-wrap {
   pointer-events: none;
   position: fixed;
+  top: 0;
+  left: 0;
   z-index: 100;
+  will-change: transform;
 }
 
 .cursor-blob {
@@ -147,34 +154,46 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  background: #fff;
-  mix-blend-mode: difference;
+  background: transparent;
+  border: 1.5px solid var(--ink);
+  box-shadow: 0 0 0 1.5px var(--background);
   transform: translate(-50%, -50%);
-  transition: width 0.35s var(--ease-out), height 0.35s var(--ease-out);
+  transition: width 0.2s var(--ease-out), height 0.2s var(--ease-out),
+    background-color 0.2s var(--ease-out), border-color 0.2s var(--ease-out);
 }
 
+/* Generic hover (nav links, plain buttons) — grows a little as a hollow
+   ring so it never occludes the text it's sitting on top of. */
 .cursor-blob.is-active {
-  width: 104px;
-  height: 104px;
+  width: 38px;
+  height: 38px;
+}
+
+/* Hover with a label (project cards, big CTAs) — solid fill so the label
+   is always legible, plus the same background-colored halo so the ring
+   stays visible even over the dark panel. */
+.cursor-blob.has-label {
+  width: 108px;
+  height: 108px;
+  background: var(--ink);
 }
 
 .cursor-label {
   position: absolute;
-  color: #fff;
-  mix-blend-mode: difference;
+  color: var(--background);
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   white-space: nowrap;
   opacity: 0;
-  transition: opacity 0.25s ease;
+  transition: opacity 0.15s ease;
 }
 
-.cursor-blob.is-active .cursor-label {
+.cursor-blob.has-label .cursor-label {
   opacity: 1;
 }
 

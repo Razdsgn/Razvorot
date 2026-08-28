@@ -1,26 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 
 export default function CustomCursor() {
+  const wrapRef = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
   const [isTouch, setIsTouch] = useState(true);
   const [active, setActive] = useState(false);
   const [label, setLabel] = useState("");
 
-  const x = useMotionValue(-100);
-  const y = useMotionValue(-100);
-  const springX = useSpring(x, { stiffness: 500, damping: 40, mass: 0.4 });
-  const springY = useSpring(y, { stiffness: 500, damping: 40, mass: 0.4 });
-
   useEffect(() => {
     setIsTouch(!window.matchMedia("(hover: hover) and (pointer: fine)").matches);
     setReady(true);
 
+    // Position is written straight to the DOM on every mousemove — no React
+    // state, no spring — so the cursor tracks the pointer with zero lag.
     const onMove = (e: MouseEvent) => {
-      x.set(e.clientX);
-      y.set(e.clientY);
+      const el = wrapRef.current;
+      if (el) el.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
     };
 
     const onOver = (e: MouseEvent) => {
@@ -48,16 +45,17 @@ export default function CustomCursor() {
       window.removeEventListener("mouseover", onOver);
       window.removeEventListener("mouseout", onOut);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!ready || isTouch) return null;
 
+  const hasLabel = active && label.length > 0;
+
   return (
-    <motion.div className="cursor-wrap" style={{ left: springX, top: springY }}>
-      <div className={`cursor-blob ${active ? "is-active" : ""}`}>
-        {label && <span className="cursor-label">{label}</span>}
+    <div ref={wrapRef} className="cursor-wrap">
+      <div className={`cursor-blob ${active ? "is-active" : ""} ${hasLabel ? "has-label" : ""}`}>
+        {hasLabel && <span className="cursor-label">{label}</span>}
       </div>
-    </motion.div>
+    </div>
   );
 }
