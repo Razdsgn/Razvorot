@@ -6,7 +6,7 @@ import { educations, experiences, languages } from "@/lib/content";
 
 export default function Experience() {
   return (
-    <section id="about" className="px-[5%] py-24 md:py-32">
+    <section id="about" className="bg-surface px-[5%] py-24 md:py-32">
       <div className="mx-auto max-w-container">
         <p className="eyebrow mb-6">Mon parcours</p>
         <h2 className="font-heading text-display text-ink">

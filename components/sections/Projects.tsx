@@ -103,7 +103,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
 
 export default function Projects() {
   return (
-    <section id="work" className="px-[5%] py-24 md:py-32">
+    <section id="work" className="bg-surface px-[5%] py-24 md:py-32">
       <div className="mx-auto max-w-container">
         <div className="grid gap-10 lg:grid-cols-12 lg:gap-8">
           <div className="lg:col-span-5">

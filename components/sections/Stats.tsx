@@ -60,7 +60,7 @@ function AnimatedStat({
 
 export default function Stats() {
   return (
-    <section className="bg-surface px-[5%] py-24 md:py-32">
+    <section className="px-[5%] py-24 md:py-32">
       <div className="mx-auto max-w-container">
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-8">
           <div className="lg:col-span-5">
